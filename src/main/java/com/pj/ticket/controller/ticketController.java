@@ -21,7 +21,7 @@ public class ticketController {
     @GetMapping("/")
     public String index(@RequestParam(value = "formType", required = false) String formType, Model model) {
         if (formType == null) {
-            formType = "main"; // 기본값
+            formType = "mainForm"; // 기본값
         }
         model.addAttribute("formType", formType);
         return "indexForm"; // => indexForm.jsp 출력
@@ -36,40 +36,18 @@ public class ticketController {
     public String joinRedirect() {
         return "redirect:/?formType=join";
     }
-
-    @GetMapping("/sportsForm")
-    public String sportsRedirect() {
-        return "redirect:/?formType=sportsForm";
-    }
-
-    @GetMapping("popup/sportsPopup")
-    public String sportsPopupRedirect() {
-        return "popup/sportsPopup";
-    }
-
-    @GetMapping("/trainForm")
-    public String trainRedirect() {
-        return "redirect:/?formType=trainForm";
-    }
-
-    @GetMapping("/reservationForm")
-    public String reservationRedirect() {
-        return "redirect:/?formType=reservation";
-    }
-
-    @GetMapping("popup/reservationChk")
-    public String reservationChkPopupRedirect() {
-        return "popup/reservationChk";
-    }
-
-    @GetMapping("popup/trainPopup")
-    public String trainPopupRedirect() {
-        return "popup/trainPopup";
+    @GetMapping("/baseballGame")
+    public String baseballGameRedirect() {
+        return "redirect:/?formType=baseballGame";
     }
 
     @GetMapping("/myPage")
     public String myPageRedirect() {
         return "redirect:/?formType=myPage";
+    }
+    @GetMapping("/mainForm")
+    public String mainFormRedirect() {
+        return "redirect:/?formType=mainForm";
     }
 
     // 회원가입
@@ -128,7 +106,7 @@ public class ticketController {
         if (session != null) {
             session.invalidate(); // 세션 무효화
         }
-        return "redirect:/sportsForm"; // 로그아웃 후 메인으로 이동
+        return "redirect:/mainForm"; // 로그아웃 후 메인으로 이동
     }
 
     // 내 정보 조회

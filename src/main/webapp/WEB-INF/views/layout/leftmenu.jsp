@@ -1,10 +1,3 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: jgkim
-  Date: 2025-05-17
-  Time: 오후 7:48
-  To change this template use File | Settings | File Templates.
---%>
 <!-- /layout/leftmenu.jsp -->
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <link href="/resources/css/main.css" rel="stylesheet" type="text/css">
@@ -13,20 +6,12 @@
     <div>
         <span class="menu-title">Menu</span>
     </div>
-
-    <div class="menu-item" data-path="/sportsForm">
-        <a href="/sportsForm" class="menu-link">Sports</a>
+    <div class="menu-item" data-path="/baseballGame">
+        <a href="/baseballGame" class="menu-link">GamePage</a>
     </div>
 
-    <div class="menu-item" data-path="/trainForm">
-        <a href="/trainForm" class="menu-link">Train</a>
-    </div>
 
     <hr>
-
-    <div class="menu-item" data-path="/reservationForm">
-        <a href="/reservationForm" class="menu-link">Reservation</a>
-    </div>
 </div>
 
 <script>

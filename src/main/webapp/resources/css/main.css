@@ -1,3 +1,159 @@
+.container { display:flex; }
+.content { flex:1; display:flex; justify-content:center; height:100vh; }
+.login-button {
+    width:100%;
+    height:45px;
+    background:#4a5cc6;
+    color:#fff;
+    font-size:20px;
+    border:none;
+    border-radius:5px;
+}
+.contentArea {
+    margin: 20px auto;
+    border-radius: 10px;
+    font-family: 'Noto Sans KR', sans-serif;
+    width: 600px;
+}
+.contentArea .headerArea {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* 필요에 따라 space-between 또는 flex-start */
+    padding: 0 0 20px 0; /* 아래 여백 등 필요에 따라 조정 */
+}
+.contentArea .headerArea span {
+    font-size: 50px;
+    color: #4a5cc6;
+    font-weight: bold;
+    margin-right: 20px; /* 버튼과 간격 */
+    letter-spacing: 1px;
+}
+
+.contentArea .btnPanel,
+.joinForm .btnPanel {
+    display: flex;
+    gap: 10px;
+    margin-top: 24px;
+    justify-content: left;
+}
+
+.joinForm label{
+    display: block;
+    margin: 18px 0 6px 2px;
+    font-size: 1.1rem;
+    color: #222;
+    font-weight: 500;
+}
+
+.joinForm input[type="text"],
+.joinForm input[type="password"],
+.joinForm input[type="date"],
+.joinForm input[type="tel"],
+.loginForm input{
+    width: 100%;
+    height: 62px;
+    padding: 0 12px;
+    margin-bottom: 15px;
+    font-size: 1rem;
+    border: 1.5px solid #d0d2d8;
+    border-radius: 6px;
+    background: #f5f6fa;
+    outline: none;
+    transition: border 0.2s;
+    box-sizing: border-box;
+}
+
+.joinForm input[type="text"]:focus,
+.joinForm input[type="password"]:focus,
+.joinForm input[type="date"]:focus,
+.joinForm input[type="tel"]:focus,
+.loginForm input:focus {
+    border: 1.5px solid #4a5cc6;
+    background: #fff;
+}
+
+.joinForm a,
+.input-with-btn .input-btn {
+    margin-left: 8px;
+    background: #4a5cc6;
+    color: #fff;
+    border-radius: 5px;
+    font-size: 0.95rem;
+    text-decoration: none;
+    vertical-align: middle;
+    cursor: pointer;
+    transition: background 0.2s;
+    height: 30px;
+    line-height: 1.2;
+}
+.joinForm span {
+    magin: 10px;
+}
+
+.joinForm a:hover,
+.input-with-btn .input-btn:hover {
+    background: #3443a6;
+}
+
+#btnSave {
+    background: #4a5cc6;
+    color: #fff;
+    border: none;
+    padding: 12px 0;
+    border-radius: 7px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+    width: 50px;
+}
+
+#btnSave:hover {
+    background: #3443a6;
+}
+
+#btnDel {
+    background: #f8cfc2;
+    color: #fff;
+    border: none;
+    padding: 12px 0;
+    border-radius: 7px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+    width: 50px;
+}
+
+#btnDel:hover {
+    background: #e0b2a4;
+}
+
+.input-with-btn {
+    position: relative;
+    width: 100%;
+    margin-bottom: 16px;
+    /* max-width는 상위 .contentArea에서 지정됨 */
+}
+
+.input-with-btn input[type="text"] {
+    padding-right: 100px; /* 버튼 공간 확보 */
+}
+
+.input-with-btn .input-btn {
+    position: absolute;
+    right: 6px;
+    top: 40%;
+    transform: translateY(-50%);
+    height: 30px;
+    padding: 0 18px;
+    margin-left: 0;
+}
+
+::placeholder {
+    color: #b0b5c1;
+    font-size: 0.98rem;
+    letter-spacing: 0.5px;
+}
+
 .leftmenu {
     width: 250px;
     background: #f5f6fa;
@@ -33,4 +189,91 @@
 .menu-link.active {
     font-weight: bold;
     color: #c0cae1;
+}
+
+.header {
+    width: 100%;
+    height: 80px;
+    background: #fff;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    padding-left: 35px;
+}
+
+.logo-circle {
+    width: 32px;
+    height: 32px;
+    background: #4a5cc6;
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.logo-text {
+    font-weight: bold;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    padding-right: 25px;
+}
+
+.user-name {
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+}
+
+.login-button-header {
+    padding: 6px 12px;
+    border: 1px solid #4a5cc6;
+    background-color: #fff;
+    color: #4a5cc6;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.user-dropdown {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.dropdown-toggle {
+    margin-left: 4px;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: white;
+    border: 1px solid #ccc;
+    box-shadow: 0px 4px 6px rgba(0,0,0,0.1);
+    z-index: 1000;
+    min-width: 120px;
+}
+
+.dropdown-item {
+    display: block;
+    padding: 8px 12px;
+    text-decoration: none;
+    color: black;
+}
+
+.dropdown-item:hover {
+    background-color: #f0f0f0;
 }

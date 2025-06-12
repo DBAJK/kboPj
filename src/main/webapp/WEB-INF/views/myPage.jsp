@@ -1,10 +1,3 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: jgkim
-  Date: 2025-05-25
-  Time: 오후 2:23
-  To change this template use File | Settings | File Templates.
---%>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
@@ -194,7 +187,7 @@
                     // 패스워드는 서버에서 보통 내려주지 않으므로 빈 채로 둡니다.
                 } else {
                     alert("사용자 정보를 불러오지 못했습니다.");
-                    location.href = "/sportsForm";
+                    location.href = "/mainForm";
                 }
             },
             error: function (err) {
@@ -218,7 +211,7 @@
                     type: 'POST',
                     success: function(data) {
                         alert("계정이 업데이트 되었습니다.");
-                        location.href = "/sportsForm";
+                        location.href = "/mainForm";
                     },
                     error: function(request, status, error) {
                         console.log("code: " + request.status);
@@ -234,7 +227,7 @@
         // 취소 버튼
         $("#btnDel").click(function() {
             if (confirm("로그인 화면으로 돌아가겠습니까?")) {
-                location.href = '/sportsForm';
+                location.href = '/mainForm';
             }
         });
 
