@@ -36,20 +36,28 @@ public class ticketController {
     public String joinRedirect() {
         return "redirect:/?formType=join";
     }
+    @GetMapping("/myPage")
+    public String myPageRedirect() {
+        return "redirect:/?formType=myPage";
+    }
+
+    @GetMapping("/mainForm")
+    public String mainFormRedirect() {
+        return "redirect:/?formType=mainForm";
+    }
     @GetMapping("/baseballGame")
     public String baseballGameRedirect() {
         return "redirect:/?formType=baseballGame";
     }
 
-    @GetMapping("/myPage")
-    public String myPageRedirect() {
-        return "redirect:/?formType=myPage";
+    @GetMapping("/scoreBoard")
+    public String scoreBoardRedirect() {
+        return "redirect:/?formType=scoreBoard";
     }
-    @GetMapping("/mainForm")
-    public String mainFormRedirect() {
-        return "redirect:/?formType=mainForm";
+    @GetMapping("/fanBulletinBoard")
+    public String fanBulletinBoardRedirect() {
+        return "redirect:/?formType=fanBulletinBoard";
     }
-
     // 회원가입
     @RequestMapping("/saveJoinForm")
     @ResponseBody

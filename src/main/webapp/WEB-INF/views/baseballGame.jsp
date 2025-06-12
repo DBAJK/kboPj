@@ -156,8 +156,8 @@
         const messageDiv = document.getElementById('message');
         messageDiv.innerHTML = `
                 <div class="success-message">
-                    🎉 축하합니다! ${attempts}번 만에 맞추셨습니다!<br>
-                    정답: ${targetNumber}
+                    축하합니다! ${'${attempts}'}번 만에 맞추셨습니다!<br>
+                    정답: ${'${targetNumber}'}
                 </div>
             `;
     }
@@ -173,16 +173,16 @@
             resultText = '아웃 ⚾';
         } else {
             let parts = [];
-            if (latest.strikes > 0) parts.push(`<span class="strike">${latest.strikes}S</span>`);
-            if (latest.balls > 0) parts.push(`<span class="ball">${latest.balls}B</span>`);
+            if (latest.strikes > 0) parts.push(`<span class="strike">${'${latest.strikes}'}S</span>`);
+            if (latest.balls > 0) parts.push(`<span class="ball">${'${latest.balls}'}B</span>`);
             resultText = parts.join(' ');
         }
 
         const historyItem = document.createElement('div');
         historyItem.className = 'history-item';
         historyItem.innerHTML = `
-                <span class="guess-number">${latest.attempt}. ${latest.guess}</span>
-                <span class="result">${resultText}</span>
+                <span class="guess-number">${'${latest.attempt}'}. ${'${latest.guess}'}</span>
+                <span class="result">${'${resultText}'}</span>
             `;
 
         historyDiv.appendChild(historyItem);

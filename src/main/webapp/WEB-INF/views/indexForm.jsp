@@ -7,7 +7,7 @@
 <link href="/resources/css/main.css" rel="stylesheet" type="text/css">
 <html>
 <head>
-    <title>Ticket</title>
+    <title>KBO board</title>
 </head>
 <body>
 <%@ include file="layout/header.jsp" %>
@@ -27,8 +27,14 @@
             <c:when test="${formType eq 'myPage'}">
                 <%@ include file="myPage.jsp" %>
             </c:when>
+            <c:when test="${formType eq 'scoreBoard'}">
+                <%@ include file="scoreBoard.jsp" %>
+            </c:when>
             <c:when test="${formType eq 'baseballGame'}">
                 <%@ include file="baseballGame.jsp" %>
+            </c:when>
+            <c:when test="${formType eq 'fanBulletinBoard'}">
+                <%@ include file="fanBulletinBoard.jsp" %>
             </c:when>
             <c:otherwise>
                 <%@ include file="mainForm.jsp" %>

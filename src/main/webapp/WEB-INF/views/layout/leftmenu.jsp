@@ -6,12 +6,19 @@
     <div>
         <span class="menu-title">Menu</span>
     </div>
+    <div class="menu-item" data-path="/mainForm">
+        <a href="/mainForm" class="menu-link">main</a>
+    </div>
+    <div class="menu-item" data-path="/scoreBoard">
+        <a href="/scoreBoard" class="menu-link">score Board</a>
+    </div>
     <div class="menu-item" data-path="/baseballGame">
-        <a href="/baseballGame" class="menu-link">GamePage</a>
+        <a href="/baseballGame" class="menu-link">숫자 야구 게임</a>
+    </div>
+    <div class="menu-item" data-path="/fanBulletinBoard">
+        <a href="/fanBulletinBoard" class="menu-link">팬게시판</a>
     </div>
 
-
-    <hr>
 </div>
 
 <script>
