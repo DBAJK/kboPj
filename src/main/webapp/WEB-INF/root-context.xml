@@ -12,7 +12,7 @@
 
     <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource">
         <property name="driverClassName" value="org.mariadb.jdbc.Driver"/>
-        <property name="url" value="jdbc:mariadb://localhost:3306/pjdb"/>
+        <property name="url" value="jdbc:mariadb://localhost:3306/kboPj"/>
         <property name="username" value="root"/>
         <property name="password" value="1234"/>
     </bean>
@@ -23,8 +23,8 @@
     </bean>
 
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-        <property name="basePackage" value="com.pj.ticket.dao"/>
+        <property name="basePackage" value="com.pj.kboPj.dao"/>
     </bean>
 
-    <context:component-scan base-package="com.pj.ticket"/>
+    <context:component-scan base-package="com.pj.kboPj"/>
 </beans>

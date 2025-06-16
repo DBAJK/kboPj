@@ -13,8 +13,19 @@
 </div>
 
 <script>
+
+    $(document).ready(function() {
+        // 로그아웃 버튼 클릭
+        $("#logout").click(function(){
+            const confirmLogout = confirm("정말 로그아웃하시겠습니까?");
+            if (!confirmLogout) {
+                e.preventDefault();
+            }
+        });
+    });
     // JSP에서 세션 값 전달
     const userName = '<c:out value="${sessionScope.userName}" default="" />';
+    const userPoint = parseInt('${sessionScope.userPoint}', 10);
     const isLoggedIn = userName !== '';
 
     const userSection = document.getElementById('user-section');
@@ -23,8 +34,9 @@
             <div class="user-dropdown">
                 <span class="dropdown-toggle"><span class="user-name">\${userName}  ▼</span></span>
                 <div class="dropdown-menu" style="display: none;">
+                    <span class="user-point">\${userPoint} point</span>
                     <a href="/myPage" class="dropdown-item">마이페이지</a>
-                    <a href="/logout" class="dropdown-item">로그아웃</a>
+                    <a href="/logout" id="logout" class="dropdown-item">로그아웃</a>
                 </div>
             </div>
         `;
@@ -40,7 +52,6 @@
         if (!toggle || !menu) return;
 
         if (toggle.contains(e.target)) {
-            // 토글 누르면 메뉴 보이기/숨기기
             menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
         } else if (!menu.contains(e.target)) {
             // 바깥 클릭 시 닫기

@@ -18,7 +18,7 @@
         <h1 style="color:#4a5cc6; font-size: 70px">LOGIN</h1>
         <form id="loginForm" class="loginForm" name="loginForm" method="post">
             <input type="text" id="userId" name="userId" placeholder="ID" /><br/>
-            <input type="password" id="userPw" name="userPw" placeholder="PASSWORD" /><br/>
+            <input type="password" id="userPwd" name="userPwd" placeholder="PASSWORD" /><br/>
             <div style="margin-bottom:20px; color:#888;">
                 <a href="joinForm" >회원가입</a>
             </div>
@@ -34,14 +34,19 @@
             type : "post",
             url : "/service/loginForm",
             data : params,
+            contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+            dataType: "text",
             success : function(data){
-                if(data == "loginOk"){
-                    location.href = '/mainForm';
+                console.log("서버 응답 userName:", data);
+
+                if (data && data.trim() !== "") {
+                    alert("환영합니다.\n" + data + "님 환영합니다.");
+                    location.href = "/mainForm";
                 } else {
                     alert("로그인에 실패하였습니다.\nID와 비밀번호를 확인해주세요.");
                 }
             },
-            error : function(request, status, error){
+            error : function(request, status, error) {
                 console.log(request.status);
                 console.log(error);
             }

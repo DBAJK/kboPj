@@ -150,16 +150,43 @@
 
         guessInput.value = '';
         guessInput.focus();
+   }
+
+    function calculatePoint(attempts) {
+        if (attempts <= 3) return 1000;
+        if (attempts <= 5) return 500;
+        return 100;
     }
 
     function showSuccessMessage() {
         const messageDiv = document.getElementById('message');
+        const point = calculatePoint(attempts);
+        const userPointStr = '<c:out value="${sessionScope.userPoint}" default="0"/>';
+        const userPoint = parseInt(userPointStr, 10);
+        const totalPoint = point + userPoint;
         messageDiv.innerHTML = `
-                <div class="success-message">
-                    축하합니다! ${'${attempts}'}번 만에 맞추셨습니다!<br>
-                    정답: ${'${targetNumber}'}
-                </div>
-            `;
+            <div class="success-message">
+                축하합니다! ${'${attempts}'}번 만에 맞추셨습니다!<br>
+                정답: ${'${targetNumber}'}<br>
+                🎁 획득한 포인트: <strong>${'${point}'}점</strong><br>
+                총 포인트: ${'${totalPoint}'}포인트
+            </div>
+        `;
+
+        $.ajax({
+            type: "POST",
+            url: "/service/updatePoint",
+            data: {
+                point: totalPoint
+            },
+            success: function(response) {
+                console.log("포인트 업데이트 성공:", response);
+                document.querySelector(".dropdown-menu .user-point").innerText = totalPoint;
+            },
+            error: function(xhr, status, error) {
+                console.error("포인트 업데이트 실패:", error);
+            }
+        });
     }
 
     function updateHistory() {

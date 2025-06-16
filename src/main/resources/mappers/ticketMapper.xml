@@ -1,106 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.pj.ticket.dao.TicketDAO">
+<mapper namespace="com.pj.kboPj.dao.KboPjDAO">
     <select id="idCheck" parameterType="String" resultType="Integer">
         SELECT  count(*)
-        FROM users
+        FROM usertable
         WHERE userId = #{userId}
     </select>
 
-    <insert id="saveJoinForm" parameterType="com.pj.ticket.vo.TicketVo">
-        INSERT INTO users(userId, password, userName, telno, point, createdAt, updatedAt, birtyD)
+    <insert id="saveJoinForm" parameterType="com.pj.kboPj.vo.KboPjVO">
+        INSERT INTO usertable
+        (teamID, userId, userPwd, userName, email, userPhoneNumber, userBirty, userPoint, createdAt, MDF_DT)
         VALUES(
-                #{userId}
-              , #{userPw}
-              , #{userName}
-              , #{telNo}
-              , 0
-              , sysdate()
-              , sysdate()
-              , #{birtyD}
-          )
+            (SELECT teamID FROM kboteam WHERE teamValue = #{teamValue})
+            , #{userId}, #{userPwd}, #{userName}, #{email}, #{userPhoneNumber}, #{userBirty}, 0, sysdate(), sysdate())
     </insert>
 
 
-    <select id="userChk" parameterType="com.pj.ticket.vo.TicketVo" resultType="com.pj.ticket.vo.TicketVo">
-        SELECT userId, password, userName, telno, point, createdAt, updatedAt, birtyD
-        FROM users
-        WHERE userId = #{userId} AND password = #{userPw}
+    <select id="userChk" parameterType="com.pj.kboPj.vo.KboPjVO" resultType="com.pj.kboPj.vo.KboPjVO">
+        SELECT userseq, userId, userPwd, userName, userPhoneNumber, userPoint, createdAt, MDF_DT, userBirty
+        FROM usertable
+        WHERE userId = #{userId} AND userPwd = #{userPwd}
     </select>
 
-    <select id="findUserById" parameterType="String" resultType="com.pj.ticket.vo.TicketVo">
-        SELECT  userId, password, userName, telno, point, createdAt, updatedAt, birtyD
-        FROM users
+    <select id="findUserById" parameterType="String" resultType="com.pj.kboPj.vo.KboPjVO">
+        SELECT  userId, userPwd, userName, userPhoneNumber, userPoint, createdAt, MDF_DT, userBirty
+        FROM usertable
         WHERE userId = #{userId}
     </select>
 
-    <!-- 티켓 예약 리스트 -->
-    <select id="searchTickets" parameterType="com.pj.ticket.vo.TicketVo" resultType="com.pj.ticket.vo.TicketVo">
-        SELECT
-            sp.seatPriceId,
-            bs.ticketId,
-            sp.placeId,
-            u.userName,
-            bs.ticketName,
-            bs.ticketType,
-            sp.status,
-            sp.usedDt,
-            sp.createAt
-        FROM
-            seatprice sp
-        JOIN
-            Users u ON sp.userId = u.userId
-        JOIN
-            book_show bs ON sp.ticketId = bs.ticketId
-        WHERE 1=1
-            AND sp.createAt BETWEEN #{startDate} AND DATE_ADD(#{endDate}, INTERVAL 1 DAY)
-            AND u.userId = #{userId}
-        <if test="ticketType != null and ticketType != ''">
-            AND bs.ticketType = #{ticketType}
-        </if>
-        GROUP BY sp.ticketId, u.userId, bs.placeId
-    </select>
-
-    <!-- 티켓 예약 상세 정보 -->
-    <select id="searchTicketInfo" parameterType="com.pj.ticket.vo.TicketVo" resultType="com.pj.ticket.vo.TicketVo">
-        SELECT
-            sp.seatPriceId,
-            bs.ticketId,
-            u.userName,
-            bs.ticketName,
-            bs.ticketType,
-            sp.status,
-            sp.usedDt,
-            bs.placeName,
-            CONCAT(sp.seatZone, '존 ', sp.seatRow, '-', sp.seatCol) as seatFull
-        FROM
-            seatprice sp
-        JOIN
-            Users u ON sp.userId = u.userId
-        JOIN
-            book_show bs ON sp.ticketId = bs.ticketId
-        WHERE 1=1
-            AND u.userId = #{userId}
-            AND sp.ticketId = #{ticketId}
-            AND sp.placeId = #{placeId}
-    </select>
-
-    <update id="cancelReservation" parameterType="com.pj.ticket.vo.TicketVo">
-        UPDATE seatprice
+    <update id="updateUser" parameterType="com.pj.kboPj.vo.KboPjVO">
+        UPDATE usertable
         SET
-            status = 'cancle'
-        WHERE userId = #{userId}
-            and ticketId = #{ticketId}
-            and placeId = #{placeId}
-    </update>
-
-    <update id="updateUser" parameterType="com.pj.ticket.vo.TicketVo">
-        UPDATE users
-        SET
-        updatedAt = sysdate()
+            MDF_DT = sysdate()
         <if test="userPw != null and userPw != ''">
-            , password = #{userPw}
+            , userPwd = #{userPwd}
         </if>
         <if test="userName != null and userName != ''">
             , userName = #{userName}
@@ -108,89 +42,28 @@
         WHERE userId = #{userId}
     </update>
 
-
-    <select id="searchMatchCard" parameterType="com.pj.ticket.vo.TicketVo" resultType="com.pj.ticket.vo.TicketVo">
-        SELECT ticketId
-             , placeId
-             , placeName
-             , ticketName
-             , description
-             , ticketType
-             , homeTeam
-             , homeTeamLogo
-             , awayTeam
-             , awayTeamLogo
-             , startDate
-             , openDate
-        FROM book_show
-        WHERE 1=1
-            AND ticketType = 'sports'
-        ORDER BY startDate, openDate
-    </select>
-
-    
-    <select id="ticketPopupSeat" parameterType="com.pj.ticket.vo.TicketVo" resultType="com.pj.ticket.vo.TicketVo">
-        SELECT bs.ticketId, bs.ticketName, bs.startDate, bs.homeTeamLogo
-             , p.placeId, p.placeName, p.address, p.seatZone, p.seatRow, p.seatCol, p.seatprice
-                          , COALESCE(sp.seatStatus, 'available') AS seatStatus
-        FROM place p
-            LEFT JOIN book_show bs ON bs.placeId = p.placeId
-            LEFT JOIN seatprice sp ON sp.placeId = p.placeId
-                AND sp.ticketId = bs.ticketId
-                AND sp.seatZone = p.seatZone
-                AND sp.seatRow = p.seatRow
-                AND sp.seatCol = p.seatCol
-        WHERE p.placeId = #{placeId}
-        AND bs.ticketId = #{ticketId}
-        ORDER BY p.seatZone+0, p.seatRow+0, p.seatCol+0
-    </select>
-
-    <insert id="reserveInsert" parameterType="com.pj.ticket.vo.TicketVo">
+<!--
+    <insert id="reserveInsert" parameterType="com.pj.kboPj.vo.KboPjVO">
         INSERT INTO seatprice(ticketId, userId, placeId, price, seatZone, seatRow, seatCol, usedDt, seatStatus)
         VALUES(#{ticketId}, #{userId}, #{placeId}, #{seatPrice}, #{seatZone}, #{seatRow}, #{seatCol}, #{usedDt}, 'booked');
     </insert>
+-->
 
-    <update id="pointUpdate" parameterType="com.pj.ticket.vo.TicketVo">
-        UPDATE users
-        SET point = #{point}
+    <update id="pointUpdate" parameterType="com.pj.kboPj.vo.KboPjVO">
+        UPDATE usertable
+        SET userPoint = #{userPoint}
         WHERE userId = #{userId}
     </update>
-
-    <select id="searchTrainCard" parameterType="com.pj.ticket.vo.TicketVo" resultType="com.pj.ticket.vo.TicketVo">
-        SELECT ticketId
-             , placeId
-             , placeName
-             , ticketName
-             , description
-             , ticketType
-             , homeTeam
-             , homeTeamLogo
-             , awayTeam
-             , awayTeamLogo
-             , startDate
-             , openDate
-        FROM book_show bs
+    
+    <select id="selectPlayerStats" parameterType="map" resultType="com.pj.kboPj.vo.KboPjVO">
+        SELECT playerId, teamID, recordType, Name, Position, GameCount,
+               HitterRank, HRA_RT, PA_CN, AB_CN, RUN_CN, HIT_CN, HR_CN, RBI_CN,
+               PitcherRank, ERA_RT, INN2_CN, W_CN, L_CN, KK_CN,
+               DefenseRank, POS_SC, DEFEN_INN2_CN, ERR_CN, FPCT_RT,
+               RunnerRank, SBA_CN, SB_CN, CS_CN, SB_RT, team
+        FROM player_stats
         WHERE 1=1
-            AND ticketType = 'Train'
-            AND homeTeam = #{homeTeam}
-            AND awayTeam = #{awayTeam}
-            AND startDate = #{startDate}
-        ORDER BY description
+            AND recordType = #{recordType}
     </select>
 
-    <select id="trainTicketPopupSeat" parameterType="com.pj.ticket.vo.TicketVo" resultType="com.pj.ticket.vo.TicketVo">
-        SELECT bs.ticketId, bs.ticketName, bs.startDate, bs.homeTeamLogo, bs.startDate
-             , p.placeId, p.placeName, p.address, p.seatZone, p.seatRow, p.seatCol, p.seatprice
-             , COALESCE(sp.seatStatus, 'available') AS seatStatus
-        FROM place p
-                 LEFT JOIN book_show bs ON bs.placeId = p.placeId
-                 LEFT JOIN seatprice sp ON sp.placeId = p.placeId
-            AND sp.ticketId = bs.ticketId
-            AND sp.seatZone = p.seatZone
-            AND sp.seatRow = p.seatRow
-            AND sp.seatCol = p.seatCol
-        WHERE p.placeId = #{placeId}
-          AND bs.ticketId = #{ticketId}
-        ORDER BY p.seatZone+0, p.seatRow, p.seatCol+0
-    </select>
 </mapper>
