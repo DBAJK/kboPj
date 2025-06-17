@@ -43,4 +43,11 @@ public class KboPjService {
         return kboPjDAO.selectPlayerStats(params);
     }
 
+    public List<KboPjVO> getBoardList(KboPjVO vo){
+        return kboPjDAO.selectAllBoards(vo);
+    }
+    public int getBoardCount(KboPjVO vo){
+        return kboPjDAO.countBoards(vo);
+    }
+
 }

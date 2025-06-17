@@ -2,6 +2,7 @@ package com.pj.kboPj.dao;
 
 import com.pj.kboPj.vo.KboPjVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -21,4 +22,8 @@ public interface KboPjDAO {
     int pointUpdate(KboPjVO vo);
 
     List<KboPjVO> selectPlayerStats(Map<String, String> params);
+
+    List<KboPjVO> selectAllBoards(KboPjVO vo);
+    int countBoards(KboPjVO vo);
+
 }

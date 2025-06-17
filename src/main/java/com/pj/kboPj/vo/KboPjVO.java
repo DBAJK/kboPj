@@ -27,7 +27,6 @@ public class KboPjVO {
     private String teamValue;
 
     private int playerId;
-    private String teamID;
     private String recordType;
     private String name;
     private String position;
@@ -67,4 +66,16 @@ public class KboPjVO {
 
     private String team;
 
+    // fanBulletinBoard
+    private int boardId;
+    private String boardTitle;
+    private String boardContent;
+    private int view_cnt;
+    private String reg_dt;
+
+    private String offset;
+    private String pageSize;
+
+    private String keyword;
+    private int page;
 }

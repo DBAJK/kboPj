@@ -161,17 +161,28 @@
     function showSuccessMessage() {
         const messageDiv = document.getElementById('message');
         const point = calculatePoint(attempts);
+        const userName = '<c:out value="${sessionScope.userName}" default=""/>';
         const userPointStr = '<c:out value="${sessionScope.userPoint}" default="0"/>';
         const userPoint = parseInt(userPointStr, 10);
         const totalPoint = point + userPoint;
-        messageDiv.innerHTML = `
-            <div class="success-message">
-                축하합니다! ${'${attempts}'}번 만에 맞추셨습니다!<br>
-                정답: ${'${targetNumber}'}<br>
-                🎁 획득한 포인트: <strong>${'${point}'}점</strong><br>
-                총 포인트: ${'${totalPoint}'}포인트
-            </div>
-        `;
+        if(userName != null && userName != '' ){
+            messageDiv.innerHTML = `
+                <div class="success-message">
+                    축하합니다! ${'${attempts}'}번 만에 맞추셨습니다!<br>
+                    정답: ${'${targetNumber}'}<br>
+                    🎁 획득한 포인트: <strong>${'${point}'}점</strong><br>
+                    총 포인트: ${'${totalPoint}'}포인트
+                </div>
+            `;
+        }else{
+            messageDiv.innerHTML = `
+                <div class="success-message">
+                    축하합니다! ${'${attempts}'}번 만에 맞추셨습니다!<br>
+                    정답: ${'${targetNumber}'}<br>
+                </div>
+            `;
+            return;
+        }
 
         $.ajax({
             type: "POST",

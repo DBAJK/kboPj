@@ -9,6 +9,7 @@
 <div class="contentArea">
     <div class="headerArea">
         <span>마이페이지</span>
+        <img id="userTeamLogo" style="width:100px; height:100px;"/>
         <div class="btnPanel">
             <button type="button" id="btnSave">계정 변경</button>
             <button type="button" id="btnDel">취소</button><br>
@@ -16,13 +17,15 @@
     </div>
     <form id="joinForm" class="joinForm" name="joinForm" method="post">
         <p>아이디</p><input type="text" name="userId" id="userId">
-        <p>비밀번호</p> <input type="password" name="userPw" id="userPw" placeholder="변경할 비밀번호 입력(문자, 숫자, 특수문자 포함 8~20자)"><br>
-        <p>비밀번호 확인</p> <input type="password" name="userPwChk" id="userPwChk" placeholder="변경할 비밀번호 재입력"><br>
+        <p>비밀번호</p> <input type="password" name="userPwd" id="userPwd" placeholder="변경할 비밀번호 입력(문자, 숫자, 특수문자 포함 8~20자)"><br>
+        <p>비밀번호 확인</p> <input type="password" name="userPwdChk" id="userPwdChk" placeholder="변경할 비밀번호 재입력"><br>
 
         <p>이름</p> <input type="text" name="userName" id="userName" placeholder="변경할 이름을 입력해주세요."><br>
-        <p>전화번호</p> <input type="tel" name="telNo" id="telNo" ><br>
-        <p>생년월일</p> <input type="text" name="birtyD" id="birtyD" ><br>
+        <p>전화번호</p> <input type="tel" name="userPhoneNumber" id="userPhoneNumber" ><br>
+        <p>이메일</p><input type="email" name="email" id="email">
+        <p>생년월일</p> <input type="text" name="userBirty" id="userBirty" ><br>
         <p>사용자 포인트</p> <input type="text" name="userPoint" id="userPoint"><br>
+        <p>응원 구단</p> <input type="text" name="userTeam" id="userTeam"><br>
     </form>
 
 </div>
@@ -36,10 +39,12 @@
                 if (res.status === "success") {
                     $("#userId").val(res.userId).prop("readonly", true);
                     $("#userName").val(res.userName);
-                    $("#telNo").val(res.phone).prop("readonly", true);
-                    $("#birtyD").val(res.birthday).prop("readonly", true);
+                    $("#userPhoneNumber").val(res.phone).prop("readonly", true);
+                    $("#userBirty").val(res.birthday).prop("readonly", true);
+                    $("#email").val(res.email).prop("readonly", true);
                     $("#userPoint").val(res.point).prop("readonly", true);
-                    // 패스워드는 서버에서 보통 내려주지 않으므로 빈 채로 둡니다.
+                    $("#userTeam").val(res.myTeam).prop("readonly", true);
+                    $("#userTeamLogo").attr("src", res.myTeamLogo || "");
                 } else {
                     alert("사용자 정보를 불러오지 못했습니다.");
                     location.href = "/mainForm";
@@ -52,9 +57,9 @@
         });
         // 계정 변경 저장
         $("#btnSave").click(function(){
-            if (joinForm.userPw.value !== joinForm.userPwChk.value) {
+            if (joinForm.userPwd.value !== joinForm.userPwdChk.value) {
                 alert("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
-                $("#userPwChk").focus();
+                $("#userPwdChk").focus();
                 return false;
             }
             if (confirm("비밀번호/이름을 변경 하시겠습니까?")) {

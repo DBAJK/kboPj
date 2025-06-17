@@ -18,14 +18,20 @@
 
 
     <select id="userChk" parameterType="com.pj.kboPj.vo.KboPjVO" resultType="com.pj.kboPj.vo.KboPjVO">
-        SELECT userseq, userId, userPwd, userName, userPhoneNumber, userPoint, createdAt, MDF_DT, userBirty
-        FROM usertable
+        SELECT u.userseq, u.userId, u.userPwd, u.userName
+            , u.userPhoneNumber, u.userPoint, u.createdAt, u.MDF_DT, u.userBirty
+            , kt.teamID, kt.teamName, kt.teamLogo
+        FROM usertable u
+             LEFT JOIN kboteam kt ON u.teamID = kt.teamID
         WHERE userId = #{userId} AND userPwd = #{userPwd}
     </select>
 
     <select id="findUserById" parameterType="String" resultType="com.pj.kboPj.vo.KboPjVO">
-        SELECT  userId, userPwd, userName, userPhoneNumber, userPoint, createdAt, MDF_DT, userBirty
-        FROM usertable
+        SELECT  u.userId, u.userPwd, u.userName, u.userPhoneNumber, u.userPoint, u.email
+                , u.userBirty, u.createdAt, u.MDF_DT
+                , k.teamName, k.teamLogo, k.teamID
+        FROM usertable u
+            LEFT JOIN kboteam k ON k.teamID = u.teamID
         WHERE userId = #{userId}
     </select>
 
@@ -33,7 +39,7 @@
         UPDATE usertable
         SET
             MDF_DT = sysdate()
-        <if test="userPw != null and userPw != ''">
+        <if test="userPwd != null and userPwd != ''">
             , userPwd = #{userPwd}
         </if>
         <if test="userName != null and userName != ''">
@@ -54,7 +60,7 @@
         SET userPoint = #{userPoint}
         WHERE userId = #{userId}
     </update>
-    
+
     <select id="selectPlayerStats" parameterType="map" resultType="com.pj.kboPj.vo.KboPjVO">
         SELECT playerId, teamID, recordType, Name, Position, GameCount,
                HitterRank, HRA_RT, PA_CN, AB_CN, RUN_CN, HIT_CN, HR_CN, RBI_CN,
@@ -64,6 +70,33 @@
         FROM player_stats
         WHERE 1=1
             AND recordType = #{recordType}
+    </select>
+
+
+    <select id="selectAllBoards" parameterType="com.pj.kboPj.vo.KboPjVO" resultType="com.pj.kboPj.vo.KboPjVO">
+        SELECT  u.userId, u.userName
+            , fb.boardId, fb.userSeq, fb.teamID, fb.boardTitle, fb.boardContent, fb.view_cnt, fb.REG_DT, fb.MDF_DT
+        FROM fanbulletinboard fb
+            LEFT JOIN usertable u ON fb.userSeq = u.userSeq
+        WHERE 1=1
+        <if test="teamId != null and teamId != ''">
+            AND fb.teamID = #{teamId}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            AND (fb.boardTitle LIKE CONCAT('%', #{keyword}, '%')
+            OR u.userName LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        ORDER BY fb.REG_DT DESC
+    </select>
+
+    <select id="countBoards" parameterType="com.pj.kboPj.vo.KboPjVO" resultType="int">
+        SELECT COUNT(*) FROM fanbulletinboard
+        WHERE 1=1
+        <if test="keyword != null and keyword != ''">
+            AND (boardTitle LIKE CONCAT('%', #{keyword}, '%')
+            OR userName LIKE CONCAT('%', #{keyword}, '%')
+            OR boardContent LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
     </select>
 
 </mapper>

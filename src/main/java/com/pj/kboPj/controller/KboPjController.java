@@ -56,6 +56,11 @@ public class KboPjController {
     public String fanBulletinBoardRedirect() {
         return "redirect:/?formType=fanBulletinBoard";
     }
+    @GetMapping("/fanBulletinBoardDtl")
+    public String fanBulletinBoardDtlRedirect() {
+        return "redirect:/?formType=fanBulletinBoardDtl";
+    }
+
     // 회원가입
     @RequestMapping("/saveJoinForm")
     @ResponseBody
@@ -102,11 +107,15 @@ public class KboPjController {
             session.setAttribute("userId", vo.getUserId());
             session.setAttribute("userName", userName);
             session.setAttribute("userPoint", userChk.getUserPoint());
+            session.setAttribute("userTeamLogo", userChk.getTeamLogo());
+            session.setAttribute("userTeamName", userChk.getTeamName());
+            session.setAttribute("userTeamId", userChk.getTeamId());
             return userName; // 로그인 성공
         }
         return "";
     }
-    
+
+
     //로그아웃
     @GetMapping("/logout")
     public String logout(HttpServletRequest request) {
@@ -132,6 +141,9 @@ public class KboPjController {
             map.put("phone", user.getUserPhoneNumber());
             map.put("point", user.getUserPoint());
             map.put("birthday", user.getUserBirty());
+            map.put("email", user.getEmail());
+            map.put("myTeam", user.getTeamName());
+            map.put("myTeamLogo", user.getTeamLogo());
         } else {
             map.put("status", "fail");
             map.put("message", "로그인 정보가 없습니다.");
@@ -155,6 +167,7 @@ public class KboPjController {
             e.printStackTrace();
         }
     }
+    // 포인트 업데이트
     @PostMapping("/service/updatePoint")
     @ResponseBody
     public String updatePoint(HttpSession session, KboPjVO vo, @RequestParam("point") int point) {
@@ -175,14 +188,44 @@ public class KboPjController {
         }
     }
 
+    @GetMapping("/service/fanBoardListData")
+    @ResponseBody
+    public Map<String, Object> getFanBoardListData(HttpSession session, KboPjVO vo,
+                                   @RequestParam("keyword") String keyword, @RequestParam("page") int page) {
+        int pageSize =10;
+        Map<String, Object> result = new HashMap<>();
+        try {
+            vo.setTeamId((String) session.getAttribute("userTeamId"));
+            vo.setKeyword(keyword);
+            vo.setPage(page);
+
+            List<KboPjVO> boardList = kboPjService.getBoardList(vo);
+            int totalCount = kboPjService.getBoardCount(vo);
+            int totalPages = (int) Math.ceil((double) totalCount / pageSize);
+
+            result.put("boardList", boardList);
+            result.put("totalCount", totalCount);
+            result.put("currentPage", page);
+            result.put("totalPages", totalPages);
+            result.put("pageSize", pageSize);
+        } catch (Exception e) {
+            e.printStackTrace(); // 반드시 서버 로그 확인
+            result.put("error", e.getMessage());
+        }
+
+        return result;
+    }
+
 /*
     @GetMapping("/playerStats")
-    public List<PlayerStats> getPlayerStats(@RequestParam Map<String, String> params, Model model) {
+    public String getPlayerStats(@RequestParam Map<String, String> params, Model model) {
         List<KboPjVO> playerList = kboPjService.selectPlayerStats(params);
         model.addAttribute("playerList", playerList);
-        return kboPjService.selectPlayerStats(recordType); // DB 조회
+        //return kboPjService.selectPlayerStats(recordType); // DB 조회
+        return "playerStats";
     }
 */
+
 
 //            ticketService.pointUpdate(vo);
 }
