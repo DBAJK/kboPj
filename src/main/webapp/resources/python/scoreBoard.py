@@ -8,8 +8,6 @@ from bs4 import BeautifulSoup
 import mysql.connector
 import json
 from datetime import datetime
-import locale  # 추가된 부분
-
 # MySQL 설정
 DB_CONFIG = {
     "host": "localhost",
@@ -17,7 +15,6 @@ DB_CONFIG = {
     "password": "1234",
     "database": "cproject"
 }
-
 # Selenium 초기화
 def init_driver():
     options = webdriver.ChromeOptions()
@@ -69,12 +66,14 @@ def parse_games(html):
     soup = BeautifulSoup(html, 'html.parser')
     games = []
     
+    # 로케일 설정 (생략)
     date_str = soup.find('span', {'id': 'cphContents_cphContents_cphContents_lblGameDate'}).text
     clean_date = date_str[:10] 
     game_date = datetime.strptime(clean_date, "%Y.%m.%d").date()
 
 
     for game in soup.find_all('div', class_='smsScore'):
+        # 홈팀/원정팀 정보 추출 (생략)
         home_team = game.find('p', class_='rightTeam').strong.text.strip()
         away_team = game.find('p', class_='leftTeam').strong.text.strip()
         # 이닝별 점수 추출 로직 변경
@@ -129,16 +128,6 @@ def save_to_db(games):
     
     try:
         # 팀 정보 저장
-        teams = set()
-        for game in games:
-            teams.add((game['home_team'], game['home_emblem']))
-            teams.add((game['away_team'], game['away_emblem']))
-        
-        cursor.executemany(
-            "INSERT IGNORE INTO teams (name, emblem_url) VALUES (%s, %s)",
-            teams
-        )
-
         for game in games:
             cursor.execute("""
                 INSERT INTO games (
@@ -188,15 +177,34 @@ def main():
     driver = init_driver()
     try:
         driver.get("https://www.koreabaseball.com/Schedule/ScoreBoard.aspx")
-        
-        WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.CLASS_NAME, "smsScore"))
-        )
-        
+    
+        wait = WebDriverWait(driver, 15)        
+        def navigate_and_scrape(btn_id, action_name):
+            try:
+                btn = wait.until(EC.element_to_be_clickable((By.ID, btn_id)))
+                btn.click()
+                wait.until(EC.staleness_of(btn))
+                wait.until(EC.presence_of_element_located((By.CLASS_NAME, "smsScore")))
+                games = parse_games(driver.page_source)
+                save_to_db(games)
+                print(f"[{action_name}] {len(games)}개의 경기 데이터 저장 완료")
+            except Exception as e:
+                print(f"{action_name} 이동 실패: {str(e)}")
+
+        # 1. 오늘 날짜 데이터 수집
+        print("=== 오늘 날짜 데이터 수집 시작 ===")
         games = parse_games(driver.page_source)
         save_to_db(games)
-        print(f"{len(games)}개의 경기 데이터 저장 완료")
-        
+        print(f"[오늘] {len(games)}건 저장")
+
+        # 2. 전날 데이터 수집
+        print("\n=== 전날 데이터 수집 시작 ===")
+        navigate_and_scrape("cphContents_cphContents_cphContents_btnPreDate", "전날")
+
+        # 3. 다음날 데이터 수집 (원래 날짜로 복귀 후 이동)
+        print("\n=== 다음날 데이터 수집 시작 ===")
+        navigate_and_scrape("cphContents_cphContents_cphContents_btnNextDate", "다음날1")  # 원래 날짜 복귀
+        navigate_and_scrape("cphContents_cphContents_cphContents_btnNextDate", "다음날2")  # 실제 다음날 이동        
     except Exception as e:
         print(f"에러 발생: {str(e)}")
     finally:
