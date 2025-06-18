@@ -3,7 +3,6 @@ import pymysql
 import requests
 from bs4 import BeautifulSoup as bs
 
-# 카테고리별 URL
 url_base = 'https://www.koreabaseball.com/Record/Player/{category}'
 category_list = [
     'HitterBasic/Basic1.aspx',
@@ -19,139 +18,16 @@ category_map = {
     'Runner': 'Runner'
 }
 
-# MySQL 연결 함수
 def get_connection():
     return pymysql.connect(
         host='localhost',
         user='root',
         password='1234',
-        db='kboPj',
+        db='cproject',
         charset='utf8mb4',
         autocommit=True
     )
 
-# 안전한 값 추출 유틸
-def get_value(row, key, default=None, dtype=str):
-    val = row.get(key)
-    if val is None or val == '-' or val == '':
-        return default
-    try:
-        return dtype(val)
-    except:
-        return default
-
-# DB에 삽입
-def insert_player_stats(df, record_type, conn):
-    cursor = conn.cursor()
-    for _, row in df.iterrows():
-        name = get_value(row, 'Name')
-        raw_team_name = get_value(row, 'Team')
-        teamID = map_team_name(raw_team_name)
-        team = raw_team_name
-        position = get_value(row, 'POS_SC') or get_value(row, 'Position')
-        game_count = get_value(row, 'GAME_CN', dtype=float)
-
-        # Hitter
-        hitter_rank = get_value(row, 'Rank', dtype=int) if record_type == 'Hitter' else None
-        hra_rt = get_value(row, 'HRA_RT', dtype=float) if record_type == 'Hitter' else None
-        pa_cn = get_value(row, 'PA_CN', dtype=float) if record_type == 'Hitter' else None
-        ab_cn = get_value(row, 'AB_CN', dtype=float) if record_type == 'Hitter' else None
-        run_cn = get_value(row, 'RUN_CN', dtype=float) if record_type == 'Hitter' else None
-        hit_cn = get_value(row, 'HIT_CN', dtype=float) if record_type == 'Hitter' else None
-        hr_cn = get_value(row, 'HR_CN', dtype=float) if record_type == 'Hitter' else None
-        rbi_cn = get_value(row, 'RBI_CN', dtype=float) if record_type == 'Hitter' else None
-
-        # Pitcher
-        pitcher_rank = get_value(row, 'Rank', dtype=int) if record_type == 'Pitcher' else None
-        era_rt = get_value(row, 'ERA_RT', dtype=float) if record_type == 'Pitcher' else None
-        inn2_cn = get_value(row, 'INN2_CN') if record_type == 'Pitcher' else None
-        w_cn = get_value(row, 'W_CN', dtype=float) if record_type == 'Pitcher' else None
-        l_cn = get_value(row, 'L_CN', dtype=float) if record_type == 'Pitcher' else None
-        kk_cn = get_value(row, 'KK_CN', dtype=float) if record_type == 'Pitcher' else None
-
-        # Defense
-        defense_rank = get_value(row, 'Rank', dtype=int) if record_type == 'Defense' else None
-        pos_sc = get_value(row, 'POS_SC') if record_type == 'Defense' else None
-        defen_inn2_cn = get_value(row, 'DEFEN_INN2_CN') if record_type == 'Defense' else None
-        err_cn = get_value(row, 'ERR_CN', dtype=float) if record_type == 'Defense' else None
-        fpct_rt = get_value(row, 'FPCT_RT', dtype=float) if record_type == 'Defense' else None
-
-        # Runner
-        runner_rank = get_value(row, 'Rank', dtype=int) if record_type == 'Runner' else None
-        sba_cn = get_value(row, 'SBA_CN', dtype=float) if record_type == 'Runner' else None
-        sb_cn = get_value(row, 'SB_CN', dtype=float) if record_type == 'Runner' else None
-        cs_cn = get_value(row, 'CS_CN', dtype=float) if record_type == 'Runner' else None
-        sb_rt = get_value(row, 'SB_RT', dtype=float) if record_type == 'Runner' else None
-
-        sql = """
-        INSERT INTO player_stats
-        (recordType, Name, teamID, Team, Position, GameCount,
-            HitterRank, HRA_RT, PA_CN, AB_CN, RUN_CN, HIT_CN, HR_CN, RBI_CN,
-            PitcherRank, ERA_RT, INN2_CN, W_CN, L_CN, KK_CN,
-            DefenseRank, POS_SC, DEFEN_INN2_CN, ERR_CN, FPCT_RT,
-            RunnerRank, SBA_CN, SB_CN, CS_CN, SB_RT)
-        VALUES
-        (%s, %s, %s, %s, %s, %s,
-            %s, %s, %s, %s, %s, %s, %s, %s,
-            %s, %s, %s, %s, %s, %s,
-            %s, %s, %s, %s, %s,
-            %s, %s, %s, %s, %s)
-        """
-
-        values = (
-            record_type, name, teamID, team, position, game_count,
-            hitter_rank, hra_rt, pa_cn, ab_cn, run_cn, hit_cn, hr_cn, rbi_cn,
-            pitcher_rank, era_rt, inn2_cn, w_cn, l_cn, kk_cn,
-            defense_rank, pos_sc, defen_inn2_cn, err_cn, fpct_rt,
-            runner_rank, sba_cn, sb_cn, cs_cn, sb_rt
-        )
-        cursor.execute(sql, values)
-    cursor.close()
-
-# 크롤링 및 삽입 실행
-def main():
-    conn = get_connection()
-    cursor = conn.cursor()
-    # 기존 데이터 삭제
-    cursor.execute("TRUNCATE TABLE player_stats")
-    print("기존 player_stats 테이블 데이터 삭제 완료")
-
-    for category in category_list:
-        record_type = category_map[category.split('/')[0]]
-        url = url_base.format(category=category)
-        req = requests.get(url)
-        soup = bs(req.text, 'html.parser')
-
-        temp_table = soup.find('div', {'class': 'record_result'})
-        col_tag = temp_table.find_all('td')
-        col_list = ['Rank', 'Name', 'Team']
-        for col in col_tag:
-            try:
-                temp_value = col.attrs['data-id']
-                if temp_value not in col_list:
-                    col_list.append(temp_value)
-                else:
-                    break
-            except:
-                pass
-
-        temp_data = pd.DataFrame(columns=col_list)
-        i = 0
-        index = 0
-        col_len = len(col_list)
-        while True:
-            try:
-                temp_data.loc[i] = [x.text.strip() for x in temp_table.find_all('td')[index:index + col_len]]
-                i += 1
-                index += col_len
-            except:
-                break
-
-        insert_player_stats(temp_data, record_type, conn)
-        print(f"{record_type} 데이터 삽입 완료")
-
-    conn.close()
-    print("모든 카테고리 데이터 삽입 완료")
 def map_team_name(korean_team_name):
     team_mapping = {
         '삼성': 10030,
@@ -164,10 +40,211 @@ def map_team_name(korean_team_name):
         'KT': 10090,
         'SSG': 10080,
         '키움': 10010
-
     }
-    return team_mapping.get(korean_team_name, 'unknown')  # 매핑 실패 시 'unknown' 반환
+    return team_mapping.get(korean_team_name.strip(), None)
 
+def get_value(row, key, dtype=str):
+    val = row.get(key)
+    if val in [None, '-', '']:
+        return None
+    try:
+        return dtype(val)
+    except:
+        return None
+
+def extract_table_data(soup):
+    table = soup.find('table', class_='tData01')
+    headers = []
+    for th in table.find('thead').find_all('th'):
+        if 'href' in str(th):
+            sort_attr = th.find('a')
+            if sort_attr:
+                header = sort_attr['href'].split("'")[1]  # 'sort('HR_CN')'
+            else:
+                header = th.get_text(strip=True)
+        else:
+            header = th.get_text(strip=True)
+
+        if '선수' in header:
+            headers.append('Name')
+        elif '팀' in header:
+            headers.append('Team')
+        elif '포지션' in header or '수비위치' in header:
+            headers.append('POS_SC')
+        elif '순위' in header:
+            headers.append('Rank')
+        else:
+            headers.append(header)
+
+    # 데이터 추출
+    rows = []
+    for tr in table.find('tbody').find_all('tr'):
+        cols = [td.text.strip() for td in tr.find_all('td')]
+        if len(cols) == len(headers):
+            rows.append(dict(zip(headers, cols)))
+    return rows
+
+def insert_player_stats(df, record_type, conn):
+    cursor = conn.cursor()
+
+    for _, row in df.iterrows():
+        name = get_value(row, 'Name')
+        team_name = get_value(row, 'Team')
+        team_id = map_team_name(team_name)
+        position = get_value(row, 'POS_SC') or get_value(row, 'Position')
+        player_rank = get_value(row, 'Rank', int)
+
+        # 공통
+        g = get_value(row, 'GAME_CN', int)
+
+        # 기본값
+        data = {
+            'AVG': None, 'PA': None, 'AB': None, 'R': None, 'H': None, 'H2': None, 'H3': None, 'HR': None,
+            'RBI': None, 'SB': None, 'CS': None, 'BB': None, 'HBP': None, 'SO': None, 'GDP': None, 'E': None,
+
+            'ERA': None, 'CG': None, 'SHO': None, 'W': None, 'L': None, 'SV': None, 'HLD': None,
+            'WPCT': None, 'TBF': None, 'IP': None, 'PH': None, 'PHR': None, 'PBB': None, 'PHBP': None,
+            'PSO': None, 'PR': None, 'PER': None,
+
+            'GS': None, 'D_IP': None, 'PKO': None, 'PO': None, 'A': None, 'DP': None,
+            'FPCT': None, 'PB': None, 'DSB': None, 'DCS': None, 'CS_RT': None,
+
+            'SBA': None, 'SB2': None, 'CS2': None, 'SBP': None, 'OOB': None
+        }
+
+        if record_type == 'Hitter':
+            data.update({
+                'AVG': get_value(row, 'AVG', float),
+                'PA': get_value(row, 'PA_CN', int),
+                'AB': get_value(row, 'AB_CN', int),
+                'R': get_value(row, 'RUN_CN', int),
+                'H': get_value(row, 'HIT_CN', int),
+                'H2': get_value(row, 'H2_CN', int),
+                'H3': get_value(row, 'H3_CN', int),
+                'HR': get_value(row, 'HR_CN', int),
+                'RBI': get_value(row, 'RBI_CN', int),
+                'SB': get_value(row, 'SB_CN', int),
+                'CS': get_value(row, 'CS_CN', int),
+                'BB': get_value(row, 'BB_CN', int),
+                'HBP': get_value(row, 'HP_CN', int),
+                'SO': get_value(row, 'KK_CN', int),
+                'GDP': get_value(row, 'GDP_CN', int),
+                'E': get_value(row, 'ERR_CN', int)
+            })
+
+        elif record_type == 'Pitcher':
+            data.update({
+                'ERA': get_value(row, 'ERA_RT', float),
+                'CG': get_value(row, 'CG_CN', int),
+                'SHO': get_value(row, 'SHO_CN', int),
+                'W': get_value(row, 'W_CN', int),
+                'L': get_value(row, 'L_CN', int),
+                'SV': get_value(row, 'SV_CN', int),
+                'HLD': get_value(row, 'HLD_CN', int),
+                'WPCT': get_value(row, 'WPCT_RT', float),
+                'TBF': get_value(row, 'TBF_CN', int),
+                'IP': get_value(row, 'INN2_CN'),
+                'PH': get_value(row, 'HIT_CN', int),
+                'PHR': get_value(row, 'HR_CN', int),
+                'PBB': get_value(row, 'BB_CN', int),
+                'PHBP': get_value(row, 'HP_CN', int),
+                'PSO': get_value(row, 'KK_CN', int),
+                'PR': get_value(row, 'R_CN', int),
+                'PER': get_value(row, 'ER_CN', int)
+            })
+
+        elif record_type == 'Defense':
+            data.update({
+                'GS': get_value(row, 'START_GAME_CN', int),
+                'D_IP': get_value(row, 'DEFEN_INN2_CN'),
+                'PKO': get_value(row, 'ERR_CN', int),
+                'PO': get_value(row, 'POFF_CN', int),
+                'A': get_value(row, 'ASS_CN', int),
+                'DP': get_value(row, 'GDP_CN', int),
+                'FPCT': get_value(row, 'FPCT_RT', float),
+                'PB': get_value(row, 'PB_CN', int),
+                'DSB': get_value(row, 'SB_CN', int),
+                'DCS': get_value(row, 'CS_CN', int),
+                'CS_RT': get_value(row, 'CS_RT', float)
+            })
+
+        elif record_type == 'Runner':
+            data.update({
+                'SBA': get_value(row, 'SBA_CN', int),
+                'SB2': get_value(row, 'SB_CN', int),
+                'CS2': get_value(row, 'CS_CN', int),
+                'SBP': get_value(row, 'SB_RT', float),
+                'OOB': get_value(row, 'RO_CN', int),
+                'PKO': get_value(row, 'POFF_CN', int),
+            })
+
+        sql = """
+        INSERT INTO player_stats (
+            recordType, Name, teamID, Position, playerRank,
+            G, AVG, PA, AB, R, H, H2, H3, HR, RBI, SB, CS, BB, HBP, SO, GDP, E,
+            ERA, CG, SHO, W, L, SV, HLD, WPCT, TBF, IP, PH, PHR, PBB, PHBP, PSO, PR, PER,
+            GS, D_IP, PKO, PO, A, DP, FPCT, PB, DSB, DCS, CS_RT,
+            SBA, SB2, CS2, SBP, OOB
+        ) VALUES (
+            %s, %s, %s, %s, %s,
+            %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+            %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+            %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+            %s, %s, %s, %s, %s
+        )
+        """
+
+        values = (
+            record_type, name, team_id, position, player_rank,
+            g, data['AVG'], data['PA'], data['AB'], data['R'], data['H'], data['H2'], data['H3'], data['HR'], data['RBI'],
+            data['SB'], data['CS'], data['BB'], data['HBP'], data['SO'], data['GDP'], data['E'],
+            data['ERA'], data['CG'], data['SHO'], data['W'], data['L'], data['SV'], data['HLD'],
+            data['WPCT'], data['TBF'], data['IP'], data['PH'], data['PHR'], data['PBB'], data['PHBP'], data['PSO'],
+            data['PR'], data['PER'],
+            data['GS'], data['D_IP'], data['PKO'], data['PO'], data['A'], data['DP'], data['FPCT'],
+            data['PB'], data['DSB'], data['DCS'], data['CS_RT'],
+            data['SBA'], data['SB2'], data['CS2'], data['SBP'], data['OOB']
+        )
+
+        try:
+            cursor.execute(sql, values)
+        except Exception as e:
+            print(f"[ERROR] 삽입 실패: {e}")
+            print(f"▶ recordType={record_type}, player={name}, values={values}")
+
+    cursor.close()
+
+def main():
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("TRUNCATE TABLE player_stats")
+    print("기존 데이터 초기화 완료")
+
+    for category in category_list:
+        category_key = category.split('/')[0]
+        record_type = category_map.get(category_key)
+        if not record_type:
+            print(f"[경고] 알 수 없는 카테고리: {category}")
+            continue
+
+        url = url_base.format(category=category)
+        try:
+            res = requests.get(url)
+            soup = bs(res.text, 'html.parser')
+            data_rows = extract_table_data(soup)
+            if not data_rows:
+                print(f"[{record_type}] 데이터 없음")
+                continue
+
+            df = pd.DataFrame(data_rows)
+            insert_player_stats(df, record_type, conn)
+            print(f"[{record_type}] {len(df)}건 삽입 완료")
+
+        except Exception as e:
+            print(f"[{record_type}] 크롤링 실패: {e}")
+
+    conn.close()
+    print("모든 데이터 삽입 완료")
 
 if __name__ == '__main__':
     main()
