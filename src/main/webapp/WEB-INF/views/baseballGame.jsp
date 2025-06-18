@@ -13,7 +13,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
 
-<link href="/resources/css/kboScore.css" rel="stylesheet" type="text/css">
+<link href="/resources/css/gameBoard.css" rel="stylesheet" type="text/css">
 <div class="game-body">
 <div class="game-container">
     <h1>숫자 야구</h1>

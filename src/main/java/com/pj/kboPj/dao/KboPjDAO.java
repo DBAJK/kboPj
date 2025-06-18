@@ -4,6 +4,7 @@ import com.pj.kboPj.vo.KboPjVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -25,5 +26,8 @@ public interface KboPjDAO {
 
     List<KboPjVO> selectAllBoards(KboPjVO vo);
     int countBoards(KboPjVO vo);
+    List<KboPjVO> selectGamesByDate(String date);
+
+    int predictionMatchUpdate(KboPjVO vo);
 
 }

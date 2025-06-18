@@ -23,7 +23,7 @@ def get_connection():
         host='localhost',
         user='root',
         password='1234',
-        db='cproject',
+        db='kboPj',
         charset='utf8mb4',
         autocommit=True
     )

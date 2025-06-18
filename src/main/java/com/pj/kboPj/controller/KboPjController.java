@@ -3,13 +3,18 @@ package com.pj.kboPj.controller;
 import com.pj.kboPj.service.KboPjService;
 import com.pj.kboPj.vo.KboPjVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 public class KboPjController {
@@ -47,11 +52,11 @@ public class KboPjController {
     public String baseballGameRedirect() {
         return "redirect:/?formType=baseballGame";
     }
-
     @GetMapping("/scoreBoard")
     public String scoreBoardRedirect() {
         return "redirect:/?formType=scoreBoard";
     }
+
     @GetMapping("/fanBulletinBoard")
     public String fanBulletinBoardRedirect() {
         return "redirect:/?formType=fanBulletinBoard";
@@ -216,6 +221,14 @@ public class KboPjController {
         return result;
     }
 
+    @GetMapping("/scoreBoard/fragment")
+    public String getScoreBoard(@RequestParam(required = false) String date, Model model) {
+        List<KboPjVO> games = kboPjService.getGamesByDate(date);
+        model.addAttribute("games", games);
+        model.addAttribute("date", date);
+        model.addAttribute("formType", "scoreBoard");
+        return "scoreBoard";
+    }
 /*
     @GetMapping("/playerStats")
     public String getPlayerStats(@RequestParam Map<String, String> params, Model model) {
@@ -225,6 +238,25 @@ public class KboPjController {
         return "playerStats";
     }
 */
+    @PostMapping("/service/updatePrediction")
+    @ResponseBody
+    public String predictionMatchUpdate(HttpSession session, KboPjVO vo, @RequestParam("point") int point) {
+        String userId = (String) session.getAttribute("userId");
+        if (userId == null) {
+            return "fail";
+        }
+        vo.setUserId(userId);
+        vo.setUserPoint(point);
+
+        int result = kboPjService.predictionMatchUpdate(vo); // 이 메서드는 userId 기준으로 포인트 누적시키는 로직
+
+        if (result > 0) {
+            session.setAttribute("userPoint", point);
+            return "success";
+        } else {
+            return "fail";
+        }
+    }
 
 
 //            ticketService.pointUpdate(vo);

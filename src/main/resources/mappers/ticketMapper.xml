@@ -62,11 +62,11 @@
     </update>
 
     <select id="selectPlayerStats" parameterType="map" resultType="com.pj.kboPj.vo.KboPjVO">
-        SELECT playerId, teamID, recordType, Name, Position, GameCount,
-               HitterRank, HRA_RT, PA_CN, AB_CN, RUN_CN, HIT_CN, HR_CN, RBI_CN,
-               PitcherRank, ERA_RT, INN2_CN, W_CN, L_CN, KK_CN,
-               DefenseRank, POS_SC, DEFEN_INN2_CN, ERR_CN, FPCT_RT,
-               RunnerRank, SBA_CN, SB_CN, CS_CN, SB_RT, team
+        SELECT PlayerID, recordType, Name, teamID, Position, playerRank,
+               AVG, G, PA, AB, R, H, H2, H3, HR, RBI, SB, CS, BB, HBP, SO, GDP, E,
+               ERA, CG, SHO, W, L, SV, HLD, WPCT, TBF, IP, PH, PHR, PBB, PHBP, PSO, PR, PER,
+               GS, D_IP, PKO, PO, A, DP, FPCT, PB, DSB, DCS, CS_RT,
+               SBA, SB2, CS2, SBP, OOB
         FROM player_stats
         WHERE 1=1
             AND recordType = #{recordType}
@@ -90,7 +90,8 @@
     </select>
 
     <select id="countBoards" parameterType="com.pj.kboPj.vo.KboPjVO" resultType="int">
-        SELECT COUNT(*) FROM fanbulletinboard
+        SELECT COUNT(*)
+        FROM fanbulletinboard
         WHERE 1=1
         <if test="keyword != null and keyword != ''">
             AND (boardTitle LIKE CONCAT('%', #{keyword}, '%')
@@ -98,5 +99,34 @@
             OR boardContent LIKE CONCAT('%', #{keyword}, '%'))
         </if>
     </select>
+
+    <select id="selectGamesByDate" parameterType="String" resultType="com.pj.kboPj.vo.KboPjVO">
+        SELECT
+            s.game_id,
+            s.game_date,
+            s.venue,
+            s.home_score,
+            s.away_score,
+            s.home_innings,
+            s.away_innings,
+            s.home_total,
+            s.away_total,
+            ht.teamName AS team1Name,
+            at.teamName AS team2Name,
+            ht.teamValue AS team1Class,
+            at.teamValue AS team2Class
+        FROM scoreboard s
+             JOIN kboteam ht ON s.home_team_id = ht.teamID
+             JOIN kboteam at ON s.away_team_id = at.teamID
+        WHERE 1=1
+            AND s.game_date = #{date}
+    </select>
+
+
+    <update id="predictionMatchUpdate" parameterType="com.pj.kboPj.vo.KboPjVO">
+        UPDATE usertable
+        SET userPoint = #{userPoint}
+        WHERE userId = #{userId}
+    </update>
 
 </mapper>

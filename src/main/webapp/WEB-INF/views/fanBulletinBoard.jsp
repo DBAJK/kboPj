@@ -72,7 +72,11 @@
                 $container.empty();
                 // team 로고 넣기
                 const userTeamLogo = '<c:out value="${sessionScope.userTeamLogo}" default="" />';
-                $("#userTeamLogo").attr("src", userTeamLogo || "");
+                if (!userTeamLogo || userTeamLogo === "null") {
+                    $("#userTeamLogo").remove();
+                } else {
+                    $("#userTeamLogo").attr("src", userTeamLogo);
+                }
 
                 if (!boardList || boardList.length === 0) {
                     $container.append(`
