@@ -60,7 +60,7 @@
 
     // 페이지 로드 시 초기화
     document.addEventListener('DOMContentLoaded', function() {
-        newGame();
+        initGame();
         updateBestScore();
 
         // 엔터키로 추측하기
@@ -247,7 +247,7 @@
         }
     }
 
-    function newGame() {
+    function initGame() {
         targetNumber = generateTargetNumber();
         attempts = 0;
         gameHistory = [];
@@ -261,6 +261,10 @@
 
         updateAttempts();
 
-        console.log('새 게임 시작! 정답:', targetNumber); // 개발용 (실제 게임에서는 제거)
+        console.log('게임 초기화 완료. 정답:', targetNumber);
+    }
+
+    function newGame() {
+        location.reload();
     }
 </script>

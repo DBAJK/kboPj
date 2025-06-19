@@ -9,10 +9,10 @@
 <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
 <div class="content">
 <div class="kboBoard-header">
-    <div class="header">
+    <div class="header-title">
         <div class="title">승부예측 - 스코어 보드</div>
     </div>
-    
+
     <div class="date-nav">
         <button onclick="changeDate(-1)">◀</button>
         <div class="date" id="currentDate"></div>
@@ -31,12 +31,12 @@
                         </div>
                         <div class="team-logos">
                             <button class="team-logo ${game.team1Class}"
-                                    onclick="selectPrediction(${game.game_id}, '${game.team1Class}', this)">
+                                    onclick="selectPrediction(${game.game_id}, '${game.team1Class}', ${game.team1Id},this)">
                                     ${game.team1Name}
                             </button>
                             <div class="vs">vs</div>
                             <button class="team-logo ${game.team2Class}"
-                                    onclick="selectPrediction(${game.game_id}, '${game.team2Class}', this)">
+                                    onclick="selectPrediction(${game.game_id}, '${game.team2Class}', ${game.team2Id}, this)">
                                     ${game.team2Name}
                             </button>
                         </div>
@@ -45,7 +45,7 @@
                         <table>
                             <thead>
                             <tr>
-                                <th style="width: 150px">TEAM</th>
+                                <th>TEAM</th>
                                 <th>1</th><th>2</th><th>3</th><th>4</th><th>5</th>
                                 <th>6</th><th>7</th><th>8</th><th>9</th><th>10</th>
                                 <th>11</th><th>12</th><th>R</th><th>H</th><th>E</th><th>B</th>
@@ -55,19 +55,19 @@
                             <tr>
                                 <td class="team-name">${game.team1Name}</td>
                                 <c:forEach var="score" items="${game.team1Scores}">
-                                    <td>${score}</td>
+                                    <td class="score-text">${score}</td>
                                 </c:forEach>
                                 <c:forEach var="total" items="${game.team1Total}">
-                                    <td>${total}</td>
+                                    <td class="score-total">${total}</td>
                                 </c:forEach>
                             </tr>
                             <tr>
                                 <td class="team-name">${game.team2Name}</td>
                                 <c:forEach var="score" items="${game.team2Scores}">
-                                    <td>${score}</td>
+                                    <td class="score-text">${score}</td>
                                 </c:forEach>
                                 <c:forEach var="total" items="${game.team2Total}">
-                                    <td>${total}</td>
+                                    <td class="score-total">${total}</td>
                                 </c:forEach>
                             </tr>
                             </tbody>
@@ -88,7 +88,7 @@
         changeDate(0);
     });
 
-    function selectPrediction(gameId, team, button) {
+    function selectPrediction(gameId, team, teamId,button) {
         // 같은 게임의 다른 버튼들 선택 해제
         const gameContainer = button.closest('.game-container');
         const allButtons = gameContainer.querySelectorAll('.team-logo');
@@ -97,42 +97,31 @@
         button.classList.add('selected');
 
         userPredictions[gameId] = team;
-
-
         // 예측 완료 메시지
         const teamName = button.textContent;
         alert(teamName + ' 예측이 완료되었습니다!');
-
-
         // 실제 구현시에는 서버로 데이터 전송
-        // sendPredictionToServer(gameId, team);
+        sendPredictionToServer(gameId, team, teamId);
     }
 
     // 서버로 예측 데이터 전송 (실제 구현용)
-    function sendPredictionToServer(gameId, team) {
-        /*
-
-        fetch('/prediction', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
+    function sendPredictionToServer(gameId, team, teamId) {
+        $.ajax({
+            url: '/service/updatePrediction',
+            data: {game_id : gameId, teamID : teamId},
+            type: 'POST',
+            success: function(response) {
+                console.log(team + "의 승리에 예측 하셨습니다.");
             },
-            body: JSON.stringify({
-                gameId: gameId,
-                team: team,
-                userId: getCurrentUserId()
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            updatePredictionStats(gameId, data);
+            error: function(xhr, status, error) {
+                console.error("포인트 업데이트 실패:", error);
+            }
         });
-        */
     }
 
     function loadScoreBoard(dateStr) {
         $.ajax({
-            url: '/scoreBoard/fragment',
+            url: '/service/scoreBoard',
             data: { date: dateStr },
             success: function(html) {
                 $('.content').html(html); // content 영역만 갱신

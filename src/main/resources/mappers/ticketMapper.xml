@@ -18,7 +18,7 @@
 
 
     <select id="userChk" parameterType="com.pj.kboPj.vo.KboPjVO" resultType="com.pj.kboPj.vo.KboPjVO">
-        SELECT u.userseq, u.userId, u.userPwd, u.userName
+        SELECT u.userSeq, u.userId, u.userPwd, u.userName
             , u.userPhoneNumber, u.userPoint, u.createdAt, u.MDF_DT, u.userBirty
             , kt.teamID, kt.teamName, kt.teamLogo
         FROM usertable u
@@ -61,12 +61,14 @@
         WHERE userId = #{userId}
     </update>
 
-    <select id="selectPlayerStats" parameterType="map" resultType="com.pj.kboPj.vo.KboPjVO">
-        SELECT PlayerID, recordType, Name, teamID, Position, playerRank,
-               AVG, G, PA, AB, R, H, H2, H3, HR, RBI, SB, CS, BB, HBP, SO, GDP, E,
-               ERA, CG, SHO, W, L, SV, HLD, WPCT, TBF, IP, PH, PHR, PBB, PHBP, PSO, PR, PER,
-               GS, D_IP, PKO, PO, A, DP, FPCT, PB, DSB, DCS, CS_RT,
-               SBA, SB2, CS2, SBP, OOB
+    <select id="selectPlayerStats" parameterType="String" resultType="com.pj.kboPj.vo.KboPjVO">
+        SELECT PlayerID as playerId, recordType, Name as name, teamID as teamId, Position as position, playerRank,
+               AVG as avg, G as g, PA as pa, AB as ab, R as r, H as h, H2 as h2, H3 as h3, HR as hr, RBI as rbi,
+               SB as sb, CS as cs, BB as bb, HBP as hbp, SO as so, GDP as gdp, E as e,
+               ERA as era, CG as cg, SHO as sho, W as w, L as l, SV as sv, HLD as hld, WPCT as wpct, TBF as tbf,
+               IP as ip, PH as ph, PHR as phr, PBB as pbb, PHBP as phbp, PSO as pso, PR as pr, PER as per,
+               GS as gs, D_IP as dIp, PKO as pko, PO as po, A as a, DP as dp, FPCT as fpct, PB as pb,
+               DSB as dsb, DCS as dcs, CS_RT as csRt, SBA as sba, SB2 as sb2, CS2 as cs2, SBP as sbp, OOB as oob
         FROM player_stats
         WHERE 1=1
             AND recordType = #{recordType}
@@ -114,7 +116,9 @@
             ht.teamName AS team1Name,
             at.teamName AS team2Name,
             ht.teamValue AS team1Class,
-            at.teamValue AS team2Class
+            at.teamValue AS team2Class,
+            ht.teamID AS team1Id,
+            at.teamID AS team2Id
         FROM scoreboard s
              JOIN kboteam ht ON s.home_team_id = ht.teamID
              JOIN kboteam at ON s.away_team_id = at.teamID
@@ -123,10 +127,9 @@
     </select>
 
 
-    <update id="predictionMatchUpdate" parameterType="com.pj.kboPj.vo.KboPjVO">
-        UPDATE usertable
-        SET userPoint = #{userPoint}
-        WHERE userId = #{userId}
-    </update>
+    <insert id="insertPredictionMatch" parameterType="com.pj.kboPj.vo.KboPjVO">
+        INSERT INTO match_predicitions (userSeq, game_id, teamID, prediction_time, is_correct)
+        VALUES  ( #{userSeq}, #{game_id}, #{teamId}, sysdate(), 'win')
+    </insert>
 
 </mapper>

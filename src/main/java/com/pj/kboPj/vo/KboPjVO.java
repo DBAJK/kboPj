@@ -15,7 +15,7 @@ import java.util.Map;
 @ToString
 public class KboPjVO {
     // 사용자 DB
-    private String userSeq;
+    private int userSeq;
     private String userId;
     private String userPwd;
     private String email;
@@ -101,10 +101,72 @@ public class KboPjVO {
     private String team2Name;
     private String team1Class;
     private String team2Class;
+    private String team1Id;
+    private String team2Id;
 
     private List<Integer> team1Scores;
     private List<Integer> team2Scores;
     private List<Integer> team1Total;
     private List<Integer> team2Total;
+
+    private String predictionTime;
+
+    // 선수 기본 정보
+    private int playerRank;
+
+    // 타자 기록
+    private Double avg;
+    private int g;
+    private int pa;
+    private int ab;
+    private int h;
+    private int h2;
+    private int h3;
+    private int hr;
+    private int rbi;
+    private int sb;
+    private int cs;
+    private int bb;
+    private int hbp;
+    private int so;
+    private int gdp;
+    private int e;
+    // 투수 기록
+    private Double era;
+    private int cg;
+    private int sho;
+    private int w;
+    private int l;
+    private int sv;
+    private int hld;
+    private Double wpct;
+    private int tbf;
+    private String ip;
+    private int ph;
+    private int phr;
+    private int pbb;
+    private int phbp;
+    private int pso;
+    private int pr;
+    private int per;
+    private int gs;
+
+    // 수비 기록
+    private String dIp;
+    private int pko;
+    private int po;
+    private int a;
+    private int dp;
+    private Double fpct;
+    private int pb;
+    private int dsb;
+    private int dcs;
+    private Double csRt;
+    // 주루 기록
+    private int sba;
+    private int sb2;
+    private int cs2;
+    private Double sbp;
+    private int oob;
 
 }

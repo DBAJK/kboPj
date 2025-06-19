@@ -108,9 +108,9 @@ public class KboPjController {
         if(userChk != null){
             HttpSession session = request.getSession();
             userName = userChk.getUserName();
-            session.setAttribute("userSeq", vo.getUserSeq());
             session.setAttribute("userId", vo.getUserId());
             session.setAttribute("userName", userName);
+            session.setAttribute("userSeq", userChk.getUserSeq());
             session.setAttribute("userPoint", userChk.getUserPoint());
             session.setAttribute("userTeamLogo", userChk.getTeamLogo());
             session.setAttribute("userTeamName", userChk.getTeamName());
@@ -221,7 +221,7 @@ public class KboPjController {
         return result;
     }
 
-    @GetMapping("/scoreBoard/fragment")
+    @GetMapping("/service/scoreBoard")
     public String getScoreBoard(@RequestParam(required = false) String date, Model model) {
         List<KboPjVO> games = kboPjService.getGamesByDate(date);
         model.addAttribute("games", games);
@@ -229,35 +229,34 @@ public class KboPjController {
         model.addAttribute("formType", "scoreBoard");
         return "scoreBoard";
     }
-/*
-    @GetMapping("/playerStats")
-    public String getPlayerStats(@RequestParam Map<String, String> params, Model model) {
-        List<KboPjVO> playerList = kboPjService.selectPlayerStats(params);
+
+    @GetMapping("/service/playerStats")
+    public String getPlayerStats(@RequestParam(required = false) String recordType, Model model) {
+        List<KboPjVO> playerList = kboPjService.selectPlayerStats(recordType);
         model.addAttribute("playerList", playerList);
-        //return kboPjService.selectPlayerStats(recordType); // DB 조회
-        return "playerStats";
+        model.addAttribute("recordType", recordType);
+        model.addAttribute("formType", "mainForm");
+        return "mainForm";
     }
-*/
-    @PostMapping("/service/updatePrediction")
+
+    @RequestMapping("/service/updatePrediction")
     @ResponseBody
-    public String predictionMatchUpdate(HttpSession session, KboPjVO vo, @RequestParam("point") int point) {
-        String userId = (String) session.getAttribute("userId");
-        if (userId == null) {
-            return "fail";
-        }
-        vo.setUserId(userId);
-        vo.setUserPoint(point);
+    public void predictionMatchInsert(HttpSession session,
+                                      KboPjVO vo,
+                                      @RequestParam("game_id") int gameId,
+                                      @RequestParam("teamID") String teamId) {
+        try {
+            Integer userSeq = (Integer) session.getAttribute("userSeq");
+            vo.setUserSeq(userSeq);
+            vo.setGame_id(gameId);
+            vo.setTeamId(teamId);
 
-        int result = kboPjService.predictionMatchUpdate(vo); // 이 메서드는 userId 기준으로 포인트 누적시키는 로직
-
-        if (result > 0) {
-            session.setAttribute("userPoint", point);
-            return "success";
-        } else {
-            return "fail";
+            kboPjService.predictionMatchInsert(vo);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
     }
-
 
 //            ticketService.pointUpdate(vo);
 }

@@ -22,12 +22,12 @@ public interface KboPjDAO {
 
     int pointUpdate(KboPjVO vo);
 
-    List<KboPjVO> selectPlayerStats(Map<String, String> params);
+    List<KboPjVO> selectPlayerStats(String recordType);
 
     List<KboPjVO> selectAllBoards(KboPjVO vo);
     int countBoards(KboPjVO vo);
     List<KboPjVO> selectGamesByDate(String date);
 
-    int predictionMatchUpdate(KboPjVO vo);
+    int insertPredictionMatch(KboPjVO vo);
 
 }

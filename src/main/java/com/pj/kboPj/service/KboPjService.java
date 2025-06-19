@@ -45,8 +45,8 @@ public class KboPjService {
         return kboPjDAO.pointUpdate(vo);
     }
 
-    public List<KboPjVO> selectPlayerStats(Map<String, String> params){
-        return kboPjDAO.selectPlayerStats(params);
+    public List<KboPjVO> selectPlayerStats(String recordType){
+        return kboPjDAO.selectPlayerStats(recordType);
     }
 
     public List<KboPjVO> getBoardList(KboPjVO vo){
@@ -104,8 +104,8 @@ public class KboPjService {
             return Collections.emptyMap();
         }
     }
-    public int  predictionMatchUpdate(KboPjVO vo) {
-        return kboPjDAO.predictionMatchUpdate(vo);
+    public int  predictionMatchInsert(KboPjVO vo) {
+        return kboPjDAO.insertPredictionMatch(vo);
     }
 
 }
