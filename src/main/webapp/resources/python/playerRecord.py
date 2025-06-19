@@ -99,22 +99,27 @@ def insert_player_stats(df, record_type, conn):
 
         # 기본값
         data = {
-            'AVG': None, 'PA': None, 'AB': None, 'R': None, 'H': None, 'H2': None, 'H3': None, 'HR': None,
-            'RBI': None, 'SB': None, 'CS': None, 'BB': None, 'HBP': None, 'SO': None, 'GDP': None, 'E': None,
+            # Hitter
+            'AVG': None, 'PA': None, 'AB': None, 'R': None, 'H': None, 'H2': None, 'H3': None, 'HR': None, 'TB': None,
+            'RBI': None, 'SAC': None, 'SF': None,
 
-            'ERA': None, 'CG': None, 'SHO': None, 'W': None, 'L': None, 'SV': None, 'HLD': None,
+            # Pitcher
+            'ERA': None, 'W': None, 'L': None, 'SV': None, 'HLD': None,
             'WPCT': None, 'TBF': None, 'IP': None, 'PH': None, 'PHR': None, 'PBB': None, 'PHBP': None,
-            'PSO': None, 'PR': None, 'PER': None,
+            'PSO': None, 'PR': None, 'PER': None, 'WHIP': None,
 
-            'GS': None, 'D_IP': None, 'PKO': None, 'PO': None, 'A': None, 'DP': None,
-            'FPCT': None, 'PB': None, 'DSB': None, 'DCS': None, 'CS_RT': None,
+            # Defense
+            'GS': None, 'D_IP': None, 'E': None, 'PKO': None, 'PO': None, 'A': None, 
+            'DP': None, 'FPCT': None, 'PB': None, 'DSB': None,
+            'DCS': None, 'CS_RT': None,
 
-            'SBA': None, 'SB2': None, 'CS2': None, 'SBP': None, 'OOB': None
+            # Runner
+            'SBA': None, 'SB2': None, 'CS2': None, 'SBP': None, 'OOB': None, 'PKO': None
         }
 
         if record_type == 'Hitter':
             data.update({
-                'AVG': get_value(row, 'AVG', float),
+                'AVG': get_value(row, 'HRA_RT', float),
                 'PA': get_value(row, 'PA_CN', int),
                 'AB': get_value(row, 'AB_CN', int),
                 'R': get_value(row, 'RUN_CN', int),
@@ -122,26 +127,20 @@ def insert_player_stats(df, record_type, conn):
                 'H2': get_value(row, 'H2_CN', int),
                 'H3': get_value(row, 'H3_CN', int),
                 'HR': get_value(row, 'HR_CN', int),
+                'TB': get_value(row, 'TB_CN', int),
                 'RBI': get_value(row, 'RBI_CN', int),
-                'SB': get_value(row, 'SB_CN', int),
-                'CS': get_value(row, 'CS_CN', int),
-                'BB': get_value(row, 'BB_CN', int),
-                'HBP': get_value(row, 'HP_CN', int),
-                'SO': get_value(row, 'KK_CN', int),
-                'GDP': get_value(row, 'GDP_CN', int),
-                'E': get_value(row, 'ERR_CN', int)
+                'SAC': get_value(row, 'SH_CN', int),
+                'SF': get_value(row, 'SF_CN', int)
             })
 
         elif record_type == 'Pitcher':
             data.update({
                 'ERA': get_value(row, 'ERA_RT', float),
-                'CG': get_value(row, 'CG_CN', int),
-                'SHO': get_value(row, 'SHO_CN', int),
                 'W': get_value(row, 'W_CN', int),
                 'L': get_value(row, 'L_CN', int),
                 'SV': get_value(row, 'SV_CN', int),
-                'HLD': get_value(row, 'HLD_CN', int),
-                'WPCT': get_value(row, 'WPCT_RT', float),
+                'HLD': get_value(row, 'HOLD_CN', int),
+                'WPCT': get_value(row, 'WRA_RT', float),
                 'TBF': get_value(row, 'TBF_CN', int),
                 'IP': get_value(row, 'INN2_CN'),
                 'PH': get_value(row, 'HIT_CN', int),
@@ -150,15 +149,18 @@ def insert_player_stats(df, record_type, conn):
                 'PHBP': get_value(row, 'HP_CN', int),
                 'PSO': get_value(row, 'KK_CN', int),
                 'PR': get_value(row, 'R_CN', int),
-                'PER': get_value(row, 'ER_CN', int)
+                'PER': get_value(row, 'ER_CN', int),
+                'WHIP': get_value(row, 'WHIP_RT', float)
             })
+
 
         elif record_type == 'Defense':
             data.update({
                 'GS': get_value(row, 'START_GAME_CN', int),
                 'D_IP': get_value(row, 'DEFEN_INN2_CN'),
-                'PKO': get_value(row, 'ERR_CN', int),
-                'PO': get_value(row, 'POFF_CN', int),
+                'E': get_value(row, 'ERR_CN', int),
+                'PKO': get_value(row, 'POFF_CN', int),
+                'PO': get_value(row, 'PO_CN', int),
                 'A': get_value(row, 'ASS_CN', int),
                 'DP': get_value(row, 'GDP_CN', int),
                 'FPCT': get_value(row, 'FPCT_RT', float),
@@ -180,28 +182,28 @@ def insert_player_stats(df, record_type, conn):
 
         sql = """
         INSERT INTO player_stats (
-            recordType, Name, teamID, Position, playerRank,
-            G, AVG, PA, AB, R, H, H2, H3, HR, RBI, SB, CS, BB, HBP, SO, GDP, E,
-            ERA, CG, SHO, W, L, SV, HLD, WPCT, TBF, IP, PH, PHR, PBB, PHBP, PSO, PR, PER,
-            GS, D_IP, PKO, PO, A, DP, FPCT, PB, DSB, DCS, CS_RT,
+            recordType, name, teamId, position, playerRank,
+            G,
+            AVG, PA, AB, R, H, H2, H3, HR, TB, RBI, SAC, SF,
+            ERA, W, L, SV, HLD, WPCT, TBF, IP, PH, PHR, PBB, PHBP, PSO, PR, PER, WHIP,
+            GS, D_IP, E, PKO, PO, A, DP, FPCT, PB, DSB, DCS, CS_RT,
             SBA, SB2, CS2, SBP, OOB
         ) VALUES (
             %s, %s, %s, %s, %s,
-            %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
-            %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
-            %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+            %s,
+            %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+            %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 
+            %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
             %s, %s, %s, %s, %s
         )
         """
-
         values = (
             record_type, name, team_id, position, player_rank,
-            g, data['AVG'], data['PA'], data['AB'], data['R'], data['H'], data['H2'], data['H3'], data['HR'], data['RBI'],
-            data['SB'], data['CS'], data['BB'], data['HBP'], data['SO'], data['GDP'], data['E'],
-            data['ERA'], data['CG'], data['SHO'], data['W'], data['L'], data['SV'], data['HLD'],
-            data['WPCT'], data['TBF'], data['IP'], data['PH'], data['PHR'], data['PBB'], data['PHBP'], data['PSO'],
-            data['PR'], data['PER'],
-            data['GS'], data['D_IP'], data['PKO'], data['PO'], data['A'], data['DP'], data['FPCT'],
+            g,
+            data['AVG'], data['PA'], data['AB'], data['R'], data['H'], data['H2'], data['H3'], data['HR'], data['TB'], data['RBI'], data['SAC'], data['SF'],
+            data['ERA'], data['W'], data['L'], data['SV'], data['HLD'], data['WPCT'], data['TBF'], data['IP'],
+            data['PH'], data['PHR'], data['PBB'], data['PHBP'], data['PSO'], data['PR'], data['PER'], data['WHIP'],
+            data['GS'], data['D_IP'], data['E'], data['PKO'], data['PO'], data['A'], data['DP'], data['FPCT'],
             data['PB'], data['DSB'], data['DCS'], data['CS_RT'],
             data['SBA'], data['SB2'], data['CS2'], data['SBP'], data['OOB']
         )

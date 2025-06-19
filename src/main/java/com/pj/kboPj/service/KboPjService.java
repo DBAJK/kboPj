@@ -55,8 +55,8 @@ public class KboPjService {
     public int getBoardCount(KboPjVO vo){
         return kboPjDAO.countBoards(vo);
     }
-    public List<KboPjVO> getGamesByDate(String date) {
-        List<KboPjVO> games = kboPjDAO.selectGamesByDate(date);
+    public List<KboPjVO> getGamesByDate(KboPjVO vo) {
+        List<KboPjVO> games = kboPjDAO.selectGamesByDate(vo);
 
         for (KboPjVO game : games) {
             // home_innings 파싱

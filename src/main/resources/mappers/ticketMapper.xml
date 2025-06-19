@@ -62,17 +62,20 @@
     </update>
 
     <select id="selectPlayerStats" parameterType="String" resultType="com.pj.kboPj.vo.KboPjVO">
-        SELECT PlayerID as playerId, recordType, Name as name, teamID as teamId, Position as position, playerRank,
-               AVG as avg, G as g, PA as pa, AB as ab, R as r, H as h, H2 as h2, H3 as h3, HR as hr, RBI as rbi,
-               SB as sb, CS as cs, BB as bb, HBP as hbp, SO as so, GDP as gdp, E as e,
-               ERA as era, CG as cg, SHO as sho, W as w, L as l, SV as sv, HLD as hld, WPCT as wpct, TBF as tbf,
-               IP as ip, PH as ph, PHR as phr, PBB as pbb, PHBP as phbp, PSO as pso, PR as pr, PER as per,
-               GS as gs, D_IP as dIp, PKO as pko, PO as po, A as a, DP as dp, FPCT as fpct, PB as pb,
-               DSB as dsb, DCS as dcs, CS_RT as csRt, SBA as sba, SB2 as sb2, CS2 as cs2, SBP as sbp, OOB as oob
-        FROM player_stats
+        SELECT ps.PlayerID as playerId, ps.recordType, ps.Name as name, ps.teamID as teamId, ps.position as position, ps.playerRank as playerRank
+            , ps.AVG as avg, ps.G as g, ps.PA as pa, ps.AB as ab, ps.R as r, ps.H as h, ps.H2 as h2, ps.H3 as h3, ps.HR as hr, ps.RBI as rbi, ps.TB as tb, ps.SAC as sac, ps.SF as sf
+            , ps.E as e, ps.ERA as era, ps.W as w, ps.L as l, ps.SV as sv, ps.HLD as hld, ps.WPCT as wpct, ps.TBF as tbf, ps.IP as ip
+            , ps.PH as ph, ps.PHR as phr, ps.PBB as pbb, ps.PHBP as phbp, ps.PSO as pso, ps.PR as pr,ps. PER as per, ps.WHIP as whip
+            , ps.GS as gs, ps.D_IP as dip, ps.PKO as pko, ps.PO as po, ps.A as a, ps.DP as dp, ps.FPCT as fpct, ps.PB as pb
+            , ps.DSB as dsb, ps.DCS as dcs, ps.CS_RT as csRt, ps.SBA as sba, ps.SB2 as sb2, ps.CS2 as cs2, ps.SBP as sbp, ps.OOB as oob
+            , k.teamName
+        FROM player_stats ps
+            LEFT JOIN kbopj.kboteam k on ps.teamID = k.teamID
         WHERE 1=1
             AND recordType = #{recordType}
+        ORDER BY ps.playerRank
     </select>
+
 
 
     <select id="selectAllBoards" parameterType="com.pj.kboPj.vo.KboPjVO" resultType="com.pj.kboPj.vo.KboPjVO">
@@ -118,12 +121,39 @@
             ht.teamValue AS team1Class,
             at.teamValue AS team2Class,
             ht.teamID AS team1Id,
-            at.teamID AS team2Id
+            at.teamID AS team2Id,
+            CONCAT(ht.teamName, ' vs ', at.teamName) AS game_name,
+            mp.prediction_id,
+            mp.teamID AS predicted_team_id,
+            kt.teamName AS predicted_team_name,
+            CASE
+                WHEN s.home_score > s.away_score THEN s.home_team_id
+                WHEN s.away_score > s.home_score THEN s.away_team_id
+                ELSE NULL
+            END AS actual_winner_id,
+            CASE
+                WHEN s.home_score > s.away_score THEN ht.teamName
+                WHEN s.away_score > s.home_score THEN at.teamName
+                ELSE NULL
+            END AS actual_winner_teamName,
+            mp.prediction_time AS predictionTime,
+            mp.is_correct
         FROM scoreboard s
-             JOIN kboteam ht ON s.home_team_id = ht.teamID
-             JOIN kboteam at ON s.away_team_id = at.teamID
+            JOIN kboteam ht ON s.home_team_id = ht.teamID
+            JOIN kboteam at ON s.away_team_id = at.teamID
+            LEFT JOIN match_predicitions mp
+                ON s.game_id = mp.game_id
+                <choose>
+                    <when test="userSeq != null and userSeq != ''">
+                        AND mp.userSeq = #{userSeq}
+                    </when>
+                    <otherwise>
+                        AND mp.userSeq = 0
+                    </otherwise>
+                </choose>
+            LEFT JOIN kboteam kt ON mp.teamID = kt.teamID
         WHERE 1=1
-            AND s.game_date = #{date}
+            AND s.game_date = #{gameDate}
     </select>
 
 

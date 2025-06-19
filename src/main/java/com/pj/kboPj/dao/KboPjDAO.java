@@ -26,7 +26,7 @@ public interface KboPjDAO {
 
     List<KboPjVO> selectAllBoards(KboPjVO vo);
     int countBoards(KboPjVO vo);
-    List<KboPjVO> selectGamesByDate(String date);
+    List<KboPjVO> selectGamesByDate(KboPjVO vo);
 
     int insertPredictionMatch(KboPjVO vo);
 

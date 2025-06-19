@@ -91,6 +91,12 @@
     font-size: 12px;
 }
 
+.winner-info {
+    margin-top: 5px;
+    color: #4b2991;
+    font-weight: bold;
+}
+
 .team-logo:hover {
     background: #007bff;
     color: white;

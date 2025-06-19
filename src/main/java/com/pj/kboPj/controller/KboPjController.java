@@ -57,10 +57,6 @@ public class KboPjController {
         return "redirect:/?formType=scoreBoard";
     }
 
-    @GetMapping("/fanBulletinBoard")
-    public String fanBulletinBoardRedirect() {
-        return "redirect:/?formType=fanBulletinBoard";
-    }
     @GetMapping("/fanBulletinBoardDtl")
     public String fanBulletinBoardDtlRedirect() {
         return "redirect:/?formType=fanBulletinBoardDtl";
@@ -192,38 +188,47 @@ public class KboPjController {
             return "fail";
         }
     }
+/*
+    @GetMapping("/fanBulletinBoard")
+    public String fanBulletinBoardRedirect() {
+        return "redirect:/?formType=fanBulletinBoard";
+    }
+*/
 
-    @GetMapping("/service/fanBoardListData")
-    @ResponseBody
-    public Map<String, Object> getFanBoardListData(HttpSession session, KboPjVO vo,
-                                   @RequestParam("keyword") String keyword, @RequestParam("page") int page) {
-        int pageSize =10;
-        Map<String, Object> result = new HashMap<>();
-        try {
-            vo.setTeamId((String) session.getAttribute("userTeamId"));
-            vo.setKeyword(keyword);
-            vo.setPage(page);
+    @GetMapping("/fanBulletinBoard")
+    public String getFanBoardListData(HttpSession session, KboPjVO vo, Model model,
+                                      @RequestParam(defaultValue = "1") int page,
+                                      @RequestParam(required = false) String keyword) {
+        int pageSize = 10;
+        int offset = (page - 1) * pageSize;
 
-            List<KboPjVO> boardList = kboPjService.getBoardList(vo);
-            int totalCount = kboPjService.getBoardCount(vo);
-            int totalPages = (int) Math.ceil((double) totalCount / pageSize);
+        KboPjVO param = new KboPjVO();
+        param.setKeyword(keyword);
+        param.setOffset(String.valueOf(offset));
+        param.setPageSize(String.valueOf(pageSize));
 
-            result.put("boardList", boardList);
-            result.put("totalCount", totalCount);
-            result.put("currentPage", page);
-            result.put("totalPages", totalPages);
-            result.put("pageSize", pageSize);
-        } catch (Exception e) {
-            e.printStackTrace(); // 반드시 서버 로그 확인
-            result.put("error", e.getMessage());
-        }
+        List<KboPjVO> boardList = kboPjService.getBoardList(param);
+        int totalCount = kboPjService.getBoardCount(param);
 
-        return result;
+        model.addAttribute("boardList", boardList);
+        model.addAttribute("totalCount", totalCount);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("page", page);
+
+        return "fanBulletinBoard";
     }
 
     @GetMapping("/service/scoreBoard")
-    public String getScoreBoard(@RequestParam(required = false) String date, Model model) {
-        List<KboPjVO> games = kboPjService.getGamesByDate(date);
+    public String getScoreBoard(HttpSession session, @RequestParam(required = false) String date, KboPjVO vo, Model model) {
+        Integer userSeq = (Integer) session.getAttribute("userSeq");
+        if (userSeq != null) {
+            vo.setUserSeq(userSeq); // 세션 값이 있을 때만 설정
+        } else {
+            vo.setUserSeq(0);
+        }
+
+        vo.setGameDate(date);
+        List<KboPjVO> games = kboPjService.getGamesByDate(vo);
         model.addAttribute("games", games);
         model.addAttribute("date", date);
         model.addAttribute("formType", "scoreBoard");

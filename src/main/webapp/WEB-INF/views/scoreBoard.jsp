@@ -28,15 +28,28 @@
                     <div class="game-header">
                         <div class="game-info">
                             <div class="game-time">${game.venue}</div>
+                            <div class="game-score">${game.team1Name} (${game.home_score})</div>
+                            <div> : </div>
+                            <div class="game-score">(${game.away_score}) ${game.team2Name}</div>
                         </div>
+                        <c:if test="${not empty game.actual_winner_teamName}">
+                            <div class="winner-info">
+                                <span class="winner-label">승리팀:</span>
+                                <span class="winner-name">${game.actual_winner_teamName}</span>
+                            </div>
+                        </c:if>
                         <div class="team-logos">
-                            <button class="team-logo ${game.team1Class}"
-                                    onclick="selectPrediction(${game.game_id}, '${game.team1Class}', ${game.team1Id},this)">
+                            <button class="team-logo ${game.team1Class}
+                            <c:if test='${not empty game.predicted_team_id and game.predicted_team_id == game.team1Id}'> selected</c:if>"
+                                    onclick="selectPrediction(${game.game_id}, '${game.team1Class}', ${game.team1Id},this)"
+                                    <c:if test="${not empty game.predicted_team_id and game.predicted_team_id != 0}">disabled</c:if>>
                                     ${game.team1Name}
                             </button>
                             <div class="vs">vs</div>
-                            <button class="team-logo ${game.team2Class}"
-                                    onclick="selectPrediction(${game.game_id}, '${game.team2Class}', ${game.team2Id}, this)">
+                            <button class="team-logo ${game.team2Class}
+                            <c:if test='${not empty game.predicted_team_id and game.predicted_team_id == game.team2Id}'> selected</c:if>"
+                                    onclick="selectPrediction(${game.game_id}, '${game.team2Class}', ${game.team2Id}, this)"
+                                    <c:if test="${not empty game.predicted_team_id and game.predicted_team_id != 0}">disabled</c:if>>
                                     ${game.team2Name}
                             </button>
                         </div>
@@ -73,6 +86,28 @@
                             </tbody>
                         </table>
                     </div>
+                    <c:if test="${not empty game.predicted_team_id and game.predicted_team_id != 0}">
+                        <div class="prediction-info">
+                            <span>내 예측: ${game.predicted_team_name}</span>
+                            <c:choose>
+                                <c:when test="${not empty game.actual_winner_id and game.actual_winner_id != 0}">
+                                    <span>
+                                        <c:choose>
+                                            <c:when test="${game.predicted_team_id == game.actual_winner_id}">
+                                                (win)
+                                            </c:when>
+                                            <c:otherwise>
+                                                (Lose)
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </span>
+                                </c:when>
+                                <c:otherwise>
+                                    <span>(경기 결과 대기중)</span>
+                                </c:otherwise>
+                            </c:choose>
+                        </div>
+                    </c:if>
                 </div>
             </c:forEach>
         </c:otherwise>
@@ -99,24 +134,28 @@
         userPredictions[gameId] = team;
         // 예측 완료 메시지
         const teamName = button.textContent;
-        alert(teamName + ' 예측이 완료되었습니다!');
         // 실제 구현시에는 서버로 데이터 전송
         sendPredictionToServer(gameId, team, teamId);
     }
 
     // 서버로 예측 데이터 전송 (실제 구현용)
     function sendPredictionToServer(gameId, team, teamId) {
-        $.ajax({
-            url: '/service/updatePrediction',
-            data: {game_id : gameId, teamID : teamId},
-            type: 'POST',
-            success: function(response) {
-                console.log(team + "의 승리에 예측 하셨습니다.");
-            },
-            error: function(xhr, status, error) {
-                console.error("포인트 업데이트 실패:", error);
-            }
-        });
+        if(confirm(team + "의 승리에 예측 하셨습니다.\n수정 불가능합니다.")){
+            $.ajax({
+                url: '/service/updatePrediction',
+                data: {game_id : gameId, teamID : teamId},
+                type: 'POST',
+                success: function(response) {
+
+
+                },
+                error: function(xhr, status, error) {
+                    console.error("포인트 업데이트 실패:", error);
+                }
+            });
+        }else{
+            return;
+        }
     }
 
     function loadScoreBoard(dateStr) {

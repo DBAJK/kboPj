@@ -287,7 +287,7 @@
 
 .main-content{
     font-family: 'Arial', sans-serif;
-    background-color: #d4d3dc;
+    background-color: rgba(243, 239, 255, 0.7);
     min-width: 800px;
     width: 100%;
     padding-top: 20px;
@@ -304,7 +304,7 @@
     font-size: 34px;
     font-weight: bold;
     color: #4a5cc6;
-    margin: 0 auto;
+    margin: 10px auto 25px auto ;
 }
 
 .tab-container {

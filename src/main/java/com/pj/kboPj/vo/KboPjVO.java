@@ -32,44 +32,6 @@ public class KboPjVO {
     private String teamLogo;
     private String teamValue;
 
-    private int playerId;
-    private String recordType;
-    private String name;
-    private String position;
-    private Integer gameCount;
-
-    // Hitter
-    private Integer hitterRank;
-    private Double hraRt;
-    private Double paCn;
-    private Double abCn;
-    private Double runCn;
-    private Double hitCn;
-    private Double hrCn;
-    private Double rbiCn;
-
-    // Pitcher
-    private Integer pitcherRank;
-    private Double eraRt;
-    private String inn2Cn;
-    private Double wCn;
-    private Double lCn;
-    private Double kkCn;
-
-    // Defense
-    private Integer defenseRank;
-    private String posSc;
-    private String defenInn2Cn;
-    private Double errCn;
-    private Double fpctRt;
-
-    // Runner
-    private Integer runnerRank;
-    private Double sbaCn;
-    private Double sbCn;
-    private Double csCn;
-    private Double sbRt;
-
     private String team;
 
     // fanBulletinBoard
@@ -110,8 +72,20 @@ public class KboPjVO {
     private List<Integer> team2Total;
 
     private String predictionTime;
+    private int prediction_id;
+    private String game_name;
+    private int predicted_team_id;
+    private String predicted_team_name;
+    private int actual_winner_id;
+    private String actual_winner_teamName;
+    private String is_correct;
 
     // 선수 기본 정보
+    private int playerId;
+    private String recordType;
+    private String name;
+    private String position;
+    private int gameCount;
     private int playerRank;
 
     // 타자 기록
@@ -119,22 +93,17 @@ public class KboPjVO {
     private int g;
     private int pa;
     private int ab;
+    private int r;
     private int h;
     private int h2;
     private int h3;
     private int hr;
+    private int tb;
     private int rbi;
-    private int sb;
-    private int cs;
-    private int bb;
-    private int hbp;
-    private int so;
-    private int gdp;
-    private int e;
+    private int sac;
+    private int sf;
     // 투수 기록
     private Double era;
-    private int cg;
-    private int sho;
     private int w;
     private int l;
     private int sv;
@@ -149,10 +118,12 @@ public class KboPjVO {
     private int pso;
     private int pr;
     private int per;
-    private int gs;
-
+    private Double whip;
     // 수비 기록
-    private String dIp;
+    private String pos;
+    private int gs;
+    private String dip;
+    private int e;
     private int pko;
     private int po;
     private int a;

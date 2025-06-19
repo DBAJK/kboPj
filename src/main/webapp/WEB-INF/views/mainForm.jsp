@@ -110,34 +110,30 @@
                         <thead>
                         <tr>
                             <th>순위</th><th>선수명</th><th>팀명</th>
-                            <th>AVG</th><th>G</th><th>PA</th><th>AB</th>
-                            <th>H</th><th>2B</th><th>3B</th><th>HR</th>
-                            <th>RBI</th><th>SB</th><th>CS</th>
-                            <th>BB</th><th>HBP</th><th>SO</th><th>GDP</th><th>E</th>
+                            <th>타율</th><th>경기수</th><th>타석</th><th>타수</th><th>득점</th>
+                            <th>안타</th><th>2루타</th><th>3루타</th><th>홈런</th>
+                            <th>루타</th><th>타점</th><th>희생번트</th><th>희생플라이</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <c:forEach var="player" items="${playerList}" >
+                        <c:forEach var="player" items="${playerList}">
                             <tr>
                                 <td>${player.playerRank}</td>
                                 <td>${player.name}</td>
-                                <td>${player.teamId}</td>
+                                <td>${player.teamName}</td>
                                 <td>${player.avg}</td>
                                 <td>${player.g}</td>
                                 <td>${player.pa}</td>
                                 <td>${player.ab}</td>
+                                <td>${player.r}</td>
                                 <td>${player.h}</td>
                                 <td>${player.h2}</td>
                                 <td>${player.h3}</td>
                                 <td>${player.hr}</td>
+                                <td>${player.tb}</td>
                                 <td>${player.rbi}</td>
-                                <td>${player.sb}</td>
-                                <td>${player.cs}</td>
-                                <td>${player.bb}</td>
-                                <td>${player.hbp}</td>
-                                <td>${player.so}</td>
-                                <td>${player.gdp}</td>
-                                <td>${player.e}</td>
+                                <td>${player.sac}</td>
+                                <td>${player.sf}</td>
                             </tr>
                         </c:forEach>
                         </tbody>
@@ -150,11 +146,10 @@
                         <thead>
                         <tr>
                             <th>순위</th><th>선수명</th><th>팀명</th>
-                            <th>ERA</th><th>G</th><th>CG</th><th>SHO</th>
-                            <th>W</th><th>L</th><th>SV</th><th>HLD</th>
-                            <th>WPCT</th><th>TBF</th><th>IP</th><th>H</th>
-                            <th>HR</th><th>BB</th><th>HBP</th><th>SO</th>
-                            <th>R</th><th>ER</th><th>GS</th>
+                            <th>ERA</th><th>경기</th><th>승리</th><th>패배</th>
+                            <th>세이브</th><th>홀드</th><th>승률</th><th>이닝</th>
+                            <th>피안타</th><th>홈런</th><th>볼넷</th><th>사구</th>
+                            <th>삼진</th><th>실점</th><th>자책점</th><th>이닝당 출루허용률</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -162,11 +157,8 @@
                             <tr>
                                 <td>${player.playerRank}</td>
                                 <td>${player.name}</td>
-                                <td>${player.teamId}</td>
+                                <td>${player.teamName}</td>
                                 <td>${player.era}</td>
-                                <td>${player.g}</td>
-                                <td>${player.cg}</td>
-                                <td>${player.sho}</td>
                                 <td>${player.w}</td>
                                 <td>${player.l}</td>
                                 <td>${player.sv}</td>
@@ -181,7 +173,7 @@
                                 <td>${player.pso}</td>
                                 <td>${player.pr}</td>
                                 <td>${player.per}</td>
-                                <td>${player.gs}</td>
+                                <td>${player.whip}</td>
                             </tr>
                         </c:forEach>
                         </tbody>
@@ -194,25 +186,32 @@
                         <thead>
                         <tr>
                             <th>순위</th><th>선수명</th><th>팀명</th>
-                            <th>수비이닝</th><th>KO</th><th>PO</th><th>A</th>
-                            <th>DP</th><th>PB</th>
-                            <th>도루저지</th><th>도루허용</th>
+                            <th>포지션</th><th>경기</th><th>선발경기</th><th>수비이닝</th>
+                            <th>실책</th><th>견제사</th><th>풋아웃</th><th>어시스트</th>
+                            <th>병살</th><th>수비율</th><th>포일</th><th>도루허용</th>
+                            <th>도루실패</th><th>도루저지율</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <c:forEach var="player" items="${playerList}" >
+                        <c:forEach var="player" items="${playerList}">
                             <tr>
                                 <td>${player.playerRank}</td>
                                 <td>${player.name}</td>
-                                <td>${player.teamId}</td>
-                                <td>${player.dIp}</td>
+                                <td>${player.teamName}</td>
+                                <td>${player.position}</td>
+                                <td>${player.g}</td>
+                                <td>${player.gs}</td>
+                                <td>${player.dip}</td>
+                                <td>${player.e}</td>
                                 <td>${player.pko}</td>
                                 <td>${player.po}</td>
                                 <td>${player.a}</td>
                                 <td>${player.dp}</td>
+                                <td>${player.fpct}</td>
                                 <td>${player.pb}</td>
                                 <td>${player.dsb}</td>
                                 <td>${player.dcs}</td>
+                                <td>${player.csRt != null ? player.csRt : '-'}</td>
                             </tr>
                         </c:forEach>
                         </tbody>
@@ -224,9 +223,9 @@
                     <table>
                         <thead>
                         <tr>
-                            <th>순위</th><th>선수명</th><th>팀명</th>
-                            <th>도루성공</th><th>도루시도</th><th>도루실패</th>
-                            <th>성공률</th><th>주루사</th>
+                            <th>순위</th><th>선수명</th><th>팀명</th><th>경기</th>
+                            <th>도루시도</th><th>도루성공</th><th>도루실패</th>
+                            <th>성공률</th><th>주루사</th><th>견제사</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -234,12 +233,14 @@
                             <tr>
                                 <td>${player.playerRank}</td>
                                 <td>${player.name}</td>
-                                <td>${player.teamId}</td>
-                                <td>${player.sb2}</td>
+                                <td>${player.teamName}</td>
+                                <td>${player.g}</td>
                                 <td>${player.sba}</td>
+                                <td>${player.sb2}</td>
                                 <td>${player.cs2}</td>
                                 <td>${player.sbp}</td>
                                 <td>${player.oob}</td>
+                                <td>${player.pko}</td>
                             </tr>
                         </c:forEach>
                         </tbody>
