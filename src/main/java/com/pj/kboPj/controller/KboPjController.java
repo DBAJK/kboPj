@@ -191,10 +191,31 @@ public class KboPjController {
     }
 
     @GetMapping("/service/fanBulletinBoard")
-    public String getFanBoardListData(HttpSession session, KboPjVO vo, Model model,
+    public String getFanBoardListData(HttpServletRequest request, KboPjVO vo, Model model,
                                       @RequestParam(required = false) String keyword) {
-        int teamId = (int) session.getAttribute("userTeamId");
+
         KboPjVO param = new KboPjVO();
+        int teamId = 0; // 기본값 설정
+
+        // 세션 안전하게 가져오기
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            Object teamIdObj = session.getAttribute("userTeamId");
+
+            // 1. null 체크 + 타입 검증
+            if (teamIdObj instanceof Integer) {
+                teamId = (Integer) teamIdObj;
+            }
+            // 2. 숫자형 문자열 대응 (선택적)
+            else if (teamIdObj instanceof String) {
+                try {
+                    teamId = Integer.parseInt((String) teamIdObj);
+                } catch (NumberFormatException e) {
+                    // 로깅 처리
+                }
+            }
+        }
+
         param.setTeamId(teamId);
         param.setKeyword(keyword);
 

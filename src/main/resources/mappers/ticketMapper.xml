@@ -80,22 +80,24 @@
         </if>
         <if test="keyword != null and keyword != ''">
             AND (fb.boardTitle LIKE CONCAT('%', #{keyword}, '%')
-            OR u.userName LIKE CONCAT('%', #{keyword}, '%'))
+            OR u.userName LIKE CONCAT('%', #{keyword}, '%')
+            OR fb.boardContent LIKE CONCAT('%', #{keyword}, '%'))
         </if>
-        ORDER BY fb.REG_DT DESC, fb.BoardId ASC
+        ORDER BY fb.REG_DT DESC
     </select>
 
     <select id="countBoards" parameterType="com.pj.kboPj.vo.KboPjVO" resultType="int">
         SELECT COUNT(*)
-        FROM fanbulletinboard
+        FROM fanbulletinboard fb
+            LEFT JOIN usertable u ON fb.userSeq = u.userSeq
         WHERE 1=1
         <if test="teamId != null and teamId != ''">
-            AND teamID = #{teamId}
+            AND fb.teamID = #{teamId}
         </if>
         <if test="keyword != null and keyword != ''">
-            AND (boardTitle LIKE CONCAT('%', #{keyword}, '%')
-            OR userName LIKE CONCAT('%', #{keyword}, '%')
-            OR boardContent LIKE CONCAT('%', #{keyword}, '%'))
+            AND (fb.boardTitle LIKE CONCAT('%', #{keyword}, '%')
+            OR u.userName LIKE CONCAT('%', #{keyword}, '%')
+            OR fb.boardContent LIKE CONCAT('%', #{keyword}, '%'))
         </if>
     </select>
 
