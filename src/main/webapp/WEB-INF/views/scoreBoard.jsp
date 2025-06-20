@@ -148,8 +148,7 @@
                 data: {game_id : gameId, teamID : teamId},
                 type: 'POST',
                 success: function(response) {
-
-
+                    console.log("예측 완료.");
                 },
                 error: function(xhr, status, error) {
                     console.error("포인트 업데이트 실패:", error);

@@ -291,6 +291,8 @@ public class KboPjController {
                                       @RequestParam("teamID") int teamId) {
         try {
             Integer userTeamId = (Integer) session.getAttribute("userTeamId");
+            Integer userSeq = (Integer) session.getAttribute("userSeq");
+            vo.setUserSeq(userSeq);
             vo.setTeamId(userTeamId);
             vo.setGame_id(gameId);
             vo.setTeamId(teamId);
