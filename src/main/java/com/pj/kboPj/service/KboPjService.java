@@ -55,6 +55,16 @@ public class KboPjService {
     public int getBoardCount(KboPjVO vo){
         return kboPjDAO.countBoards(vo);
     }
+    public void delFanBoard(KboPjVO vo){
+        kboPjDAO.delFanBoard(vo);
+    }
+    public void insertFanBoard(KboPjVO vo){
+        kboPjDAO.insertFanBoard(vo);
+    }
+    public void updateFanBoard(KboPjVO vo){
+        kboPjDAO.updateFanBoard(vo);
+    }
+
     public List<KboPjVO> getGamesByDate(KboPjVO vo) {
         List<KboPjVO> games = kboPjDAO.selectGamesByDate(vo);
 

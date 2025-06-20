@@ -26,6 +26,12 @@ public interface KboPjDAO {
 
     List<KboPjVO> selectAllBoards(KboPjVO vo);
     int countBoards(KboPjVO vo);
+
+    void delFanBoard(KboPjVO vo);
+
+    void insertFanBoard(KboPjVO vo);
+    void updateFanBoard(KboPjVO vo);
+
     List<KboPjVO> selectGamesByDate(KboPjVO vo);
 
     int insertPredictionMatch(KboPjVO vo);

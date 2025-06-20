@@ -57,9 +57,10 @@ public class KboPjController {
         return "redirect:/?formType=scoreBoard";
     }
 
-    @GetMapping("/fanBulletinBoardDtl")
-    public String fanBulletinBoardDtlRedirect() {
-        return "redirect:/?formType=fanBulletinBoardDtl";
+
+    @GetMapping("/fanBulletinBoard")
+    public String fanBulletinBoardRedirect() {
+        return "redirect:/?formType=fanBulletinBoard";
     }
 
     // 회원가입
@@ -188,24 +189,14 @@ public class KboPjController {
             return "fail";
         }
     }
-/*
-    @GetMapping("/fanBulletinBoard")
-    public String fanBulletinBoardRedirect() {
-        return "redirect:/?formType=fanBulletinBoard";
-    }
-*/
 
-    @GetMapping("/fanBulletinBoard")
+    @GetMapping("/service/fanBulletinBoard")
     public String getFanBoardListData(HttpSession session, KboPjVO vo, Model model,
-                                      @RequestParam(defaultValue = "1") int page,
                                       @RequestParam(required = false) String keyword) {
-        int pageSize = 10;
-        int offset = (page - 1) * pageSize;
-
+        int teamId = (int) session.getAttribute("userTeamId");
         KboPjVO param = new KboPjVO();
+        param.setTeamId(teamId);
         param.setKeyword(keyword);
-        param.setOffset(String.valueOf(offset));
-        param.setPageSize(String.valueOf(pageSize));
 
         List<KboPjVO> boardList = kboPjService.getBoardList(param);
         int totalCount = kboPjService.getBoardCount(param);
@@ -213,10 +204,58 @@ public class KboPjController {
         model.addAttribute("boardList", boardList);
         model.addAttribute("totalCount", totalCount);
         model.addAttribute("keyword", keyword);
-        model.addAttribute("page", page);
 
         return "fanBulletinBoard";
     }
+
+    @PostMapping("/service/insertBoard")
+    @ResponseBody
+    public String insertFanBoard(HttpSession session, KboPjVO vo) {
+        try {
+            int teamId = (int) session.getAttribute("userTeamId");
+            int userSeq = (int) session.getAttribute("userSeq");
+
+            vo.setTeamId(teamId);
+            vo.setUserSeq(userSeq);
+
+            kboPjService.insertFanBoard(vo);
+            return "success";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "error";
+        }
+    }
+
+    @PostMapping("/service/updateBoard")
+    @ResponseBody
+    public String updateFanBoard(HttpSession session, KboPjVO vo) {
+        try {
+            int teamId = (int) session.getAttribute("userTeamId");
+            int userSeq = (int) session.getAttribute("userSeq");
+            vo.setTeamId(teamId);
+            vo.setUserSeq(userSeq);
+
+            kboPjService.updateFanBoard(vo);
+            return "success";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "error";
+        }
+    }
+
+    @RequestMapping(value = "/service/deleteBoard", method = RequestMethod.POST)
+    @ResponseBody
+    public void delFanBoard(HttpSession session, KboPjVO vo, Model model,
+                              @RequestParam("boardId") int boardId) {
+        int teamId = (int) session.getAttribute("userTeamId");
+        int userSeq = (int) session.getAttribute("userSeq");
+        vo.setBoardId(boardId);
+        vo.setTeamId(teamId);
+        vo.setUserSeq(userSeq);
+
+        kboPjService.delFanBoard(vo);
+    }
+
 
     @GetMapping("/service/scoreBoard")
     public String getScoreBoard(HttpSession session, @RequestParam(required = false) String date, KboPjVO vo, Model model) {
@@ -249,10 +288,10 @@ public class KboPjController {
     public void predictionMatchInsert(HttpSession session,
                                       KboPjVO vo,
                                       @RequestParam("game_id") int gameId,
-                                      @RequestParam("teamID") String teamId) {
+                                      @RequestParam("teamID") int teamId) {
         try {
-            Integer userSeq = (Integer) session.getAttribute("userSeq");
-            vo.setUserSeq(userSeq);
+            Integer userTeamId = (Integer) session.getAttribute("userTeamId");
+            vo.setTeamId(userTeamId);
             vo.setGame_id(gameId);
             vo.setTeamId(teamId);
 

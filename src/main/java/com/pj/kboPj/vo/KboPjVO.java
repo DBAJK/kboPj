@@ -27,7 +27,7 @@ public class KboPjVO {
     private String mdfDt;
 
     // 팀 DB
-    private String teamId;
+    private int teamId;
     private String teamName;
     private String teamLogo;
     private String teamValue;
@@ -40,9 +40,6 @@ public class KboPjVO {
     private String boardContent;
     private int view_cnt;
     private String reg_dt;
-
-    private String offset;
-    private String pageSize;
 
     private String keyword;
     private int page;

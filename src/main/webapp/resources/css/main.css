@@ -1,3 +1,7 @@
+* {
+    margin: 0;
+}
+
 .container { display:flex; }
 .content { flex:1; display:flex; justify-content:center;  height: calc(100vh - 117px); }
 .login-button {
@@ -293,8 +297,10 @@
     padding-top: 20px;
     overflow: hidden;
     flex-direction: column;
+    height: 100%;
 }
 .main-content .grid{
+    height: 100%;
     margin: 10px 10px;
 }
 .main-title{
@@ -310,7 +316,7 @@
 .tab-container {
     width: 100%;
     min-height: 200px;
-    height: 100vh;
+    height: calc(100% - 80px);
     background: white;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -361,7 +367,6 @@
 }
 
 .tab li.on a::before {
-    content: '';
     position: absolute;
     bottom: -1px;
     left: 0;
@@ -370,13 +375,20 @@
     background: white;
     z-index: 3;
 }
+.tab-area {
+    width: 100%;
+    height: 30px;
+    background-color: white;
+}
 
 .tab-content {
-    padding: 30px;
+    height: calc(100% - 52.5px);
+    padding: 0 30px 30px 30px;
     min-height: 200px;
     background: white;
     align-items: center;
     margin: auto;
+    overflow-y: scroll;
 }
 
 @keyframes fadeIn {

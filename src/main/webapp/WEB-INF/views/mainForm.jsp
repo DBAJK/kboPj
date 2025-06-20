@@ -103,6 +103,7 @@
                 <a href="#" onclick="fetchPlayerStats('Runner')">주루</a>
             </li>
         </ul>
+        <div class="tab-area"></div>
         <c:choose>
             <c:when test="${recordType eq 'Hitter'}">
                 <div class="tab-content">
@@ -185,10 +186,10 @@
                     <table>
                         <thead>
                         <tr>
-                            <th>순위</th><th>선수명</th><th>팀명</th>
+                            <th>순위</th><th>선수명</th><th>팀명</th><th>수비율</th>
                             <th>포지션</th><th>경기</th><th>선발경기</th><th>수비이닝</th>
                             <th>실책</th><th>견제사</th><th>풋아웃</th><th>어시스트</th>
-                            <th>병살</th><th>수비율</th><th>포일</th><th>도루허용</th>
+                            <th>병살</th><th>포일</th><th>도루허용</th>
                             <th>도루실패</th><th>도루저지율</th>
                         </tr>
                         </thead>
@@ -198,6 +199,7 @@
                                 <td>${player.playerRank}</td>
                                 <td>${player.name}</td>
                                 <td>${player.teamName}</td>
+                                <td>${player.fpct}</td>
                                 <td>${player.position}</td>
                                 <td>${player.g}</td>
                                 <td>${player.gs}</td>
@@ -207,7 +209,6 @@
                                 <td>${player.po}</td>
                                 <td>${player.a}</td>
                                 <td>${player.dp}</td>
-                                <td>${player.fpct}</td>
                                 <td>${player.pb}</td>
                                 <td>${player.dsb}</td>
                                 <td>${player.dcs}</td>
@@ -223,8 +224,8 @@
                     <table>
                         <thead>
                         <tr>
-                            <th>순위</th><th>선수명</th><th>팀명</th><th>경기</th>
-                            <th>도루시도</th><th>도루성공</th><th>도루실패</th>
+                            <th>순위</th><th>선수명</th><th>팀명</th><th>도루시도</th>
+                            <th>경기</th><th>도루성공</th><th>도루실패</th>
                             <th>성공률</th><th>주루사</th><th>견제사</th>
                         </tr>
                         </thead>
@@ -234,8 +235,8 @@
                                 <td>${player.playerRank}</td>
                                 <td>${player.name}</td>
                                 <td>${player.teamName}</td>
-                                <td>${player.g}</td>
                                 <td>${player.sba}</td>
+                                <td>${player.g}</td>
                                 <td>${player.sb2}</td>
                                 <td>${player.cs2}</td>
                                 <td>${player.sbp}</td>

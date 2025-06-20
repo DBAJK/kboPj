@@ -1,9 +1,14 @@
+* {
+    margin: 0;
+}
+
 .kboBoard-header {
     font-family: "Malgun Gothic", sans-serif;
     margin: 0;
     padding: 20px;
     background-color: #f5f5f5;
     width: 80%;
+    height: calc(100vh - 140px);
 }
 
 .header-title {
@@ -43,7 +48,12 @@
     font-size: 16px;
     font-weight: bold;
 }
-
+.scoreboard-container{
+    height: calc(100vh - 233px);
+    overflow-y: auto;  /* 세로 스크롤 */
+    overflow-x: hidden; /* 가로 스크롤 방지 */
+    margin: auto;
+}
 .game-container {
     background: white;
     border: 1px solid #ddd;
@@ -115,6 +125,7 @@
 
 .scoreboard {
     overflow-x: auto;
+    width: 100%;
 }
 
 .scoreboard table {

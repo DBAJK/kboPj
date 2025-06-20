@@ -48,13 +48,6 @@
         WHERE userId = #{userId}
     </update>
 
-<!--
-    <insert id="reserveInsert" parameterType="com.pj.kboPj.vo.KboPjVO">
-        INSERT INTO seatprice(ticketId, userId, placeId, price, seatZone, seatRow, seatCol, usedDt, seatStatus)
-        VALUES(#{ticketId}, #{userId}, #{placeId}, #{seatPrice}, #{seatZone}, #{seatRow}, #{seatCol}, #{usedDt}, 'booked');
-    </insert>
--->
-
     <update id="pointUpdate" parameterType="com.pj.kboPj.vo.KboPjVO">
         UPDATE usertable
         SET userPoint = #{userPoint}
@@ -63,20 +56,18 @@
 
     <select id="selectPlayerStats" parameterType="String" resultType="com.pj.kboPj.vo.KboPjVO">
         SELECT ps.PlayerID as playerId, ps.recordType, ps.Name as name, ps.teamID as teamId, ps.position as position, ps.playerRank as playerRank
-            , ps.AVG as avg, ps.G as g, ps.PA as pa, ps.AB as ab, ps.R as r, ps.H as h, ps.H2 as h2, ps.H3 as h3, ps.HR as hr, ps.RBI as rbi, ps.TB as tb, ps.SAC as sac, ps.SF as sf
-            , ps.E as e, ps.ERA as era, ps.W as w, ps.L as l, ps.SV as sv, ps.HLD as hld, ps.WPCT as wpct, ps.TBF as tbf, ps.IP as ip
-            , ps.PH as ph, ps.PHR as phr, ps.PBB as pbb, ps.PHBP as phbp, ps.PSO as pso, ps.PR as pr,ps. PER as per, ps.WHIP as whip
-            , ps.GS as gs, ps.D_IP as dip, ps.PKO as pko, ps.PO as po, ps.A as a, ps.DP as dp, ps.FPCT as fpct, ps.PB as pb
-            , ps.DSB as dsb, ps.DCS as dcs, ps.CS_RT as csRt, ps.SBA as sba, ps.SB2 as sb2, ps.CS2 as cs2, ps.SBP as sbp, ps.OOB as oob
-            , k.teamName
+             , ps.AVG as avg, ps.G as g, ps.PA as pa, ps.AB as ab, ps.R as r, ps.H as h, ps.H2 as h2, ps.H3 as h3, ps.HR as hr, ps.RBI as rbi, ps.TB as tb, ps.SAC as sac, ps.SF as sf
+             , ps.E as e, ps.ERA as era, ps.W as w, ps.L as l, ps.SV as sv, ps.HLD as hld, ps.WPCT as wpct, ps.TBF as tbf, ps.IP as ip
+             , ps.PH as ph, ps.PHR as phr, ps.PBB as pbb, ps.PHBP as phbp, ps.PSO as pso, ps.PR as pr,ps. PER as per, ps.WHIP as whip
+             , ps.GS as gs, ps.D_IP as dip, ps.PKO as pko, ps.PO as po, ps.A as a, ps.DP as dp, ps.FPCT as fpct, ps.PB as pb
+             , ps.DSB as dsb, ps.DCS as dcs, ps.CS_RT as csRt, ps.SBA as sba, ps.SB2 as sb2, ps.CS2 as cs2, ps.SBP as sbp, ps.OOB as oob
+             , k.teamName
         FROM player_stats ps
-            LEFT JOIN kbopj.kboteam k on ps.teamID = k.teamID
+                 LEFT JOIN kbopj.kboteam k on ps.teamID = k.teamID
         WHERE 1=1
-            AND recordType = #{recordType}
+          AND recordType = #{recordType}
         ORDER BY ps.playerRank
     </select>
-
-
 
     <select id="selectAllBoards" parameterType="com.pj.kboPj.vo.KboPjVO" resultType="com.pj.kboPj.vo.KboPjVO">
         SELECT  u.userId, u.userName
@@ -91,19 +82,48 @@
             AND (fb.boardTitle LIKE CONCAT('%', #{keyword}, '%')
             OR u.userName LIKE CONCAT('%', #{keyword}, '%'))
         </if>
-        ORDER BY fb.REG_DT DESC
+        ORDER BY fb.REG_DT DESC, fb.BoardId ASC
     </select>
 
     <select id="countBoards" parameterType="com.pj.kboPj.vo.KboPjVO" resultType="int">
         SELECT COUNT(*)
         FROM fanbulletinboard
         WHERE 1=1
+        <if test="teamId != null and teamId != ''">
+            AND teamID = #{teamId}
+        </if>
         <if test="keyword != null and keyword != ''">
             AND (boardTitle LIKE CONCAT('%', #{keyword}, '%')
             OR userName LIKE CONCAT('%', #{keyword}, '%')
             OR boardContent LIKE CONCAT('%', #{keyword}, '%'))
         </if>
     </select>
+
+    <delete id="delFanBoard" parameterType="com.pj.kboPj.vo.KboPjVO">
+        DELETE FROM fanbulletinboard
+        WHERE boardId=#{boardId}
+            AND teamID=#{teamId}
+            AND userSeq=#{userSeq}
+    </delete>
+
+    <insert id="insertFanBoard" parameterType="com.pj.kboPj.vo.KboPjVO">
+        INSERT INTO fanbulletinboard (
+               userSeq, teamID, boardTitle, boardContent, view_cnt,
+               userName, REG_DT, MDF_DT
+        )
+        VALUES(
+               #{userSeq}, #{teamId}, #{boardTitle}, '', 1,
+               #{userName}, #{reg_dt}, sysdate()
+        )
+    </insert>
+
+    <update id="updateFanBoard" parameterType="com.pj.kboPj.vo.KboPjVO">
+        UPDATE fanbulletinboard
+            SET
+              boardTitle=#{boardTitle}
+              , MDF_DT= sysdate()
+        WHERE boardId=#{boardId}
+    </update>
 
     <select id="selectGamesByDate" parameterType="String" resultType="com.pj.kboPj.vo.KboPjVO">
         SELECT

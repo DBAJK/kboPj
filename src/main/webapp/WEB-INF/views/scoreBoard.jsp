@@ -18,6 +18,7 @@
         <div class="date" id="currentDate"></div>
         <button onclick="changeDate(1)">▶</button>
     </div>
+    <div class="scoreboard-container">
     <c:choose>
         <c:when test="${empty games}">
             <div class="no-data">해당 날짜에 경기가 없습니다.</div>
@@ -112,6 +113,7 @@
             </c:forEach>
         </c:otherwise>
     </c:choose>
+    </div>
 </div>
 </div>
 <script>

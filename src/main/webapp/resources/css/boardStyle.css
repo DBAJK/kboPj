@@ -1,7 +1,5 @@
-.body-head-container{
-    font-family: 'Malgun Gothic', sans-serif;
-    padding: 20px;
-    width: 100%;
+*{
+    margin: 0;
 }
 
 .body-container {
@@ -11,6 +9,7 @@
     box-shadow: 0 20px 40px rgba(0,0,0,0.1);
     overflow: hidden;
     flex-direction: column;
+    height: 100%;
 }
 
 .h1-header{
@@ -21,7 +20,7 @@
 }
 
 .board-header {
-    padding: 30px;
+    padding: 10px;
     text-align: center;
 }
 
@@ -65,6 +64,14 @@
     outline: none;
     border-color: #3498db;
     box-shadow: 0 0 10px rgba(52, 152, 219, 0.3);
+}
+
+.board-contents{
+    height: calc(100% - 280px);
+    padding: 10px 30px;
+    min-height: 400px;
+    margin: 0 10px;
+    overflow-y: scroll;
 }
 
 .btn {

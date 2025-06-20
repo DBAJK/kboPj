@@ -36,9 +36,6 @@
             <c:when test="${formType eq 'fanBulletinBoard'}">
                 <%@ include file="fanBulletinBoard.jsp" %>
             </c:when>
-            <c:when test="${formType eq 'fanBulletinBoardDtl'}">
-                <%@ include file="fanBulletinBoardDtl.jsp" %>
-            </c:when>
             <c:otherwise>
                 <%@ include file="mainForm.jsp" %>
             </c:otherwise>
