@@ -35,5 +35,8 @@ public interface KboPjDAO {
     List<KboPjVO> selectGamesByDate(KboPjVO vo);
 
     int insertPredictionMatch(KboPjVO vo);
+    List<KboPjVO> getUnjudgedPredictions(int userSeq);
+    Integer findWinnerTeamIdByGameId(int gameId);
+    void updatePredictionResult(KboPjVO prediction);
 
 }

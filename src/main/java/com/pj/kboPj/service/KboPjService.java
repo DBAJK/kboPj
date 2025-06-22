@@ -117,5 +117,14 @@ public class KboPjService {
     public int  predictionMatchInsert(KboPjVO vo) {
         return kboPjDAO.insertPredictionMatch(vo);
     }
+    public List<KboPjVO> getUnjudgedPredictions(int userSeq){
+        return kboPjDAO.getUnjudgedPredictions(userSeq);
+    }
+    public Integer findWinnerTeamIdByGameId(int gameId){
+        return kboPjDAO.findWinnerTeamIdByGameId(gameId);
+    }
+    public void updatePredictionResult(KboPjVO prediction){
+        kboPjDAO.updatePredictionResult(prediction);
+    }
 
 }

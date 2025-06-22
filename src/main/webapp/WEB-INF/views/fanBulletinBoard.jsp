@@ -51,7 +51,13 @@
             <input type="text" name="keyword" id="keyword" placeholder="제목 또는 작성자 검색..." value="<%= keyword %>">
             <button type="button" onclick="getBoardAll()" class="btn btn-primary">검색</button>
         </div>
+        <%
+            if (userTeamLogo != null && !userTeamLogo.isEmpty()) {
+        %>
         <button id="btnNew" onclick="addRow();" class="btn btn-success">새 글 작성</button>
+        <%
+            }
+        %>
     </div>
     <div class="board-contents">
     <table class="board-table">
@@ -62,7 +68,24 @@
             <th style="width: 120px;">작성자</th>
             <th style="width: 120px;">작성일</th>
             <th style="width: 80px;">조회수</th>
+            <%
+                Object teamIdObj = session.getAttribute("userTeamId");
+                int userTeamId = 0; // 기본값 설정
+
+                if (teamIdObj != null) {
+                    try {
+                        // 정수 변환 시도 (문자열/정수 모두 처리)
+                        userTeamId = Integer.parseInt(teamIdObj.toString());
+                    } catch (NumberFormatException e) {
+                        // 오류 발생 시 기본값 유지
+                    }
+                }
+                if (userTeamId > 0) {
+            %>
             <th style="width: 200px;">-</th>
+            <%
+                }
+            %>
         </tr>
         </thead>
         <tbody id="boardListContainer">
@@ -85,17 +108,17 @@
             <td class="author"><%= board.getUserName() %></td>
             <td class="date"><%= board.getReg_dt() != null && board.getReg_dt().length() >= 10 ? board.getReg_dt().substring(5, 10) : "" %></td>
             <td class="views"><%= board.getView_cnt() %></td>
+            <%
+                String loginUserId = (String) session.getAttribute("userId");
+                if (loginUserId != null && loginUserId.equals(board.getUserId())) {
+            %>
             <td class="bntArea">
-                <%
-                    String loginUserId = (String) session.getAttribute("userId");
-                    if (loginUserId != null && loginUserId.equals(board.getUserId())) {
-                %>
                 <button data-board="<%= board.getBoardId() %>" id="editBtn" data-action="edit" class="btn btn-sm btn-warning" onclick="editRow(this)">수정</button>
                 <button data-board="<%= board.getBoardId() %>" id="delBtn" class="btn btn-sm btn-danger" onclick="delRow(this)">삭제</button>
-                <%
-                    }
-                %>
             </td>
+            <%
+                }
+            %>
         </tr>
         <%
                 }

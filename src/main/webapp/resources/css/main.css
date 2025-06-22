@@ -22,8 +22,8 @@
 .contentArea .headerArea {
     display: flex;
     align-items: center;
-    justify-content: space-between; /* 필요에 따라 space-between 또는 flex-start */
-    padding: 0 0 20px 0; /* 아래 여백 등 필요에 따라 조정 */
+    justify-content: space-between;
+    padding: 0 0 20px 0;
 }
 .contentArea .headerArea span {
     font-size: 50px;
@@ -140,7 +140,6 @@
     position: relative;
     width: 100%;
     margin-bottom: 16px;
-    /* max-width는 상위 .contentArea에서 지정됨 */
 }
 
 .input-with-btn input[type="text"] {

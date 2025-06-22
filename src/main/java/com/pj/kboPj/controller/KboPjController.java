@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -112,6 +114,48 @@ public class KboPjController {
             session.setAttribute("userTeamLogo", userChk.getTeamLogo());
             session.setAttribute("userTeamName", userChk.getTeamName());
             session.setAttribute("userTeamId", userChk.getTeamId());
+            try {
+                int userSeq = userChk.getUserSeq();
+
+                List<KboPjVO> predictions = kboPjService.getUnjudgedPredictions(userSeq);
+
+                int totalRewardPoint = 0;
+
+                for (KboPjVO prediction : predictions) {
+                    int gameId = prediction.getGame_id();
+                    int predictedTeamId = prediction.getTeamId();
+                    prediction.getPrediction_id();
+
+                    Integer winnerTeamId = kboPjService.findWinnerTeamIdByGameId(gameId); // 실제 승리 팀
+
+                    if (winnerTeamId != null) {
+                        if (predictedTeamId == winnerTeamId) {
+                            // 예측 성공
+                            totalRewardPoint += 500;
+                            prediction.setIs_correct("win");
+                        } else {
+                            prediction.setIs_correct("lose");
+                        }
+                    }else{
+                        prediction.setIs_correct("lose");
+                    }
+                    kboPjService.updatePredictionResult(prediction);
+                }
+
+                if (totalRewardPoint > 0) {
+                    // 포인트 누적
+                    KboPjVO updateVO = new KboPjVO();
+                    updateVO.setUserId(vo.getUserId());
+                    updateVO.setUserPoint(userChk.getUserPoint() + totalRewardPoint);
+                    kboPjService.pointUpdate(updateVO);
+
+                    // 세션 갱신
+                    session.setAttribute("userPoint", updateVO.getUserPoint());
+                }
+            } catch (Exception e) {
+                e.printStackTrace(); // 실 서비스에서는 로깅 처리
+            }
+
             return userName; // 로그인 성공
         }
         return "";

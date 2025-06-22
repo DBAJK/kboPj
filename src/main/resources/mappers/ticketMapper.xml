@@ -71,7 +71,7 @@
 
     <select id="selectAllBoards" parameterType="com.pj.kboPj.vo.KboPjVO" resultType="com.pj.kboPj.vo.KboPjVO">
         SELECT  u.userId, u.userName
-            , fb.boardId, fb.userSeq, fb.teamID, fb.boardTitle, fb.boardContent, fb.view_cnt, fb.REG_DT, fb.MDF_DT
+            , fb.boardId, fb.userSeq, fb.teamID, fb.boardTitle, fb.view_cnt, fb.REG_DT, fb.MDF_DT
         FROM fanbulletinboard fb
             LEFT JOIN usertable u ON fb.userSeq = u.userSeq
         WHERE 1=1
@@ -80,8 +80,7 @@
         </if>
         <if test="keyword != null and keyword != ''">
             AND (fb.boardTitle LIKE CONCAT('%', #{keyword}, '%')
-            OR u.userName LIKE CONCAT('%', #{keyword}, '%')
-            OR fb.boardContent LIKE CONCAT('%', #{keyword}, '%'))
+            OR u.userName LIKE CONCAT('%', #{keyword}, '%'))
         </if>
         ORDER BY fb.REG_DT DESC
     </select>
@@ -96,8 +95,7 @@
         </if>
         <if test="keyword != null and keyword != ''">
             AND (fb.boardTitle LIKE CONCAT('%', #{keyword}, '%')
-            OR u.userName LIKE CONCAT('%', #{keyword}, '%')
-            OR fb.boardContent LIKE CONCAT('%', #{keyword}, '%'))
+            OR u.userName LIKE CONCAT('%', #{keyword}, '%'))
         </if>
     </select>
 
@@ -110,11 +108,11 @@
 
     <insert id="insertFanBoard" parameterType="com.pj.kboPj.vo.KboPjVO">
         INSERT INTO fanbulletinboard (
-               userSeq, teamID, boardTitle, boardContent, view_cnt,
+               userSeq, teamID, boardTitle, view_cnt,
                userName, REG_DT, MDF_DT
         )
         VALUES(
-               #{userSeq}, #{teamId}, #{boardTitle}, '', 1,
+               #{userSeq}, #{teamId}, #{boardTitle}, 1,
                #{userName}, #{reg_dt}, sysdate()
         )
     </insert>
@@ -181,7 +179,33 @@
 
     <insert id="insertPredictionMatch" parameterType="com.pj.kboPj.vo.KboPjVO">
         INSERT INTO match_predicitions (userSeq, game_id, teamID, prediction_time, is_correct)
-        VALUES  ( #{userSeq}, #{game_id}, #{teamId}, sysdate(), 'win')
+        VALUES  ( #{userSeq}, #{game_id}, #{teamId}, sysdate(), '')
     </insert>
+
+    <select id="getUnjudgedPredictions" parameterType="int" resultType="com.pj.kboPj.vo.KboPjVO">
+        SELECT mp.prediction_id, mp.userSeq, mp.game_id, mp.teamID, mp.prediction_time, mp.is_correct
+        FROM match_predicitions mp
+            LEFT JOIN kbopj.scoreboard s on mp.game_id = s.game_id
+        WHERE mp.userSeq = #{userSeq}
+            AND (mp.is_correct IS NULL OR mp.is_correct = '')
+            AND s.game_date &lt; CURDATE()
+    </select>
+
+    <select id="findWinnerTeamIdByGameId" parameterType="int" resultType="Integer">
+        SELECT
+            CASE
+                WHEN home_score > away_score THEN home_team_id
+                WHEN away_score > home_score THEN away_team_id
+                ELSE NULL
+            END AS actual_winner_id
+        FROM scoreboard
+        WHERE game_id = #{gameId}
+    </select>
+
+    <update id="updatePredictionResult" parameterType="com.pj.kboPj.vo.KboPjVO">
+        UPDATE match_predicitions
+        SET is_correct = #{is_correct}
+        WHERE prediction_id = #{prediction_id}
+    </update>
 
 </mapper>

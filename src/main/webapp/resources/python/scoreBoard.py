@@ -209,7 +209,10 @@ def main():
 
         # 3. 다음날 데이터 수집 (원래 날짜로 복귀 후 이동)
         navigate_and_scrape("cphContents_cphContents_cphContents_btnNextDate")  # 원래 날짜 복귀
-        navigate_and_scrape("cphContents_cphContents_cphContents_btnNextDate")  # 실제 다음날 이동        
+        if datetime.today().weekday() != 6:  # 6 == Sunday
+            navigate_and_scrape("cphContents_cphContents_cphContents_btnNextDate")
+        else:
+            print("다음날 데이터 없어서 생략합니다.")
     except Exception as e:
         print(f"에러 발생: {str(e)}")
     finally:

@@ -8,90 +8,90 @@
 <link href="/resources/css/kboBoard.css" rel="stylesheet" type="text/css">
 <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
 <div class="content">
-<div class="kboBoard-header">
-    <div class="header-title">
-        <div class="title">승부예측 - 스코어 보드</div>
-    </div>
+    <div class="kboBoard-header">
+        <div class="header-title">
+            <div class="title">승부예측 - 스코어 보드</div>
+        </div>
 
-    <div class="date-nav">
-        <button onclick="changeDate(-1)">◀</button>
-        <div class="date" id="currentDate"></div>
-        <button onclick="changeDate(1)">▶</button>
-    </div>
-    <div class="scoreboard-container">
-    <c:choose>
-        <c:when test="${empty games}">
-            <div class="no-data">해당 날짜에 경기가 없습니다.</div>
-        </c:when>
-        <c:otherwise>
-            <c:forEach var="game" items="${games}">
-                <div class="game-container" data-game-id="${game.game_id}">
-                    <div class="game-header">
-                        <div class="game-info">
-                            <div class="game-time">${game.venue}</div>
-                            <div class="game-score">${game.team1Name} (${game.home_score})</div>
-                            <div> : </div>
-                            <div class="game-score">(${game.away_score}) ${game.team2Name}</div>
-                        </div>
-                        <c:if test="${not empty game.actual_winner_teamName}">
-                            <div class="winner-info">
-                                <span class="winner-label">승리팀:</span>
-                                <span class="winner-name">${game.actual_winner_teamName}</span>
+        <div class="date-nav">
+            <button onclick="changeDate(-1)">◀</button>
+            <div class="date" id="currentDate"></div>
+            <button onclick="changeDate(1)">▶</button>
+        </div>
+        <div class="scoreboard-container">
+            <c:choose>
+                <c:when test="${empty games}">
+                    <div class="no-data">해당 날짜에 경기가 없습니다.</div>
+                </c:when>
+                <c:otherwise>
+                    <c:forEach var="game" items="${games}">
+                        <div class="game-container" data-game-id="${game.game_id}">
+                            <div class="game-header">
+                                <div class="game-info">
+                                    <div class="game-time">${game.venue}</div>
+                                    <div class="game-score">${game.team1Name} (${game.home_score})</div>
+                                    <div> : </div>
+                                    <div class="game-score">(${game.away_score}) ${game.team2Name}</div>
+                                </div>
+                                <c:if test="${not empty game.actual_winner_teamName}">
+                                    <div class="winner-info">
+                                        <span class="winner-label">승리팀:</span>
+                                        <span class="winner-name">${game.actual_winner_teamName}</span>
+                                    </div>
+                                </c:if>
+                                <div class="team-logos">
+                                    <button class="team-logo ${game.team1Class}
+                                            <c:if test='${not empty game.predicted_team_id and game.predicted_team_id == game.team1Id}'> selected</c:if>"
+                                            onclick="selectPrediction(${game.game_id}, '${game.team1Class}', ${game.team1Id}, this, '${game.game_date}')"
+                                            <c:if test="${not empty game.predicted_team_id and game.predicted_team_id != 0}">disabled</c:if>>
+                                            ${game.team1Name}
+                                    </button>
+                                    <div class="vs">vs</div>
+                                    <button class="team-logo ${game.team2Class}
+                                            <c:if test='${not empty game.predicted_team_id and game.predicted_team_id == game.team2Id}'> selected</c:if>"
+                                            onclick="selectPrediction(${game.game_id}, '${game.team2Class}', ${game.team2Id}, this, '${game.game_date}')"
+                                            <c:if test="${not empty game.predicted_team_id and game.predicted_team_id != 0}">disabled</c:if>>
+                                            ${game.team2Name}
+                                    </button>
+                                </div>
                             </div>
-                        </c:if>
-                        <div class="team-logos">
-                            <button class="team-logo ${game.team1Class}
-                            <c:if test='${not empty game.predicted_team_id and game.predicted_team_id == game.team1Id}'> selected</c:if>"
-                                    onclick="selectPrediction(${game.game_id}, '${game.team1Class}', ${game.team1Id},this)"
-                                    <c:if test="${not empty game.predicted_team_id and game.predicted_team_id != 0}">disabled</c:if>>
-                                    ${game.team1Name}
-                            </button>
-                            <div class="vs">vs</div>
-                            <button class="team-logo ${game.team2Class}
-                            <c:if test='${not empty game.predicted_team_id and game.predicted_team_id == game.team2Id}'> selected</c:if>"
-                                    onclick="selectPrediction(${game.game_id}, '${game.team2Class}', ${game.team2Id}, this)"
-                                    <c:if test="${not empty game.predicted_team_id and game.predicted_team_id != 0}">disabled</c:if>>
-                                    ${game.team2Name}
-                            </button>
-                        </div>
-                    </div>
-                    <div class="scoreboard">
-                        <table>
-                            <thead>
-                            <tr>
-                                <th>TEAM</th>
-                                <th>1</th><th>2</th><th>3</th><th>4</th><th>5</th>
-                                <th>6</th><th>7</th><th>8</th><th>9</th><th>10</th>
-                                <th>11</th><th>12</th><th>R</th><th>H</th><th>E</th><th>B</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr>
-                                <td class="team-name">${game.team1Name}</td>
-                                <c:forEach var="score" items="${game.team1Scores}">
-                                    <td class="score-text">${score}</td>
-                                </c:forEach>
-                                <c:forEach var="total" items="${game.team1Total}">
-                                    <td class="score-total">${total}</td>
-                                </c:forEach>
-                            </tr>
-                            <tr>
-                                <td class="team-name">${game.team2Name}</td>
-                                <c:forEach var="score" items="${game.team2Scores}">
-                                    <td class="score-text">${score}</td>
-                                </c:forEach>
-                                <c:forEach var="total" items="${game.team2Total}">
-                                    <td class="score-total">${total}</td>
-                                </c:forEach>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <c:if test="${not empty game.predicted_team_id and game.predicted_team_id != 0}">
-                        <div class="prediction-info">
-                            <span>내 예측: ${game.predicted_team_name}</span>
-                            <c:choose>
-                                <c:when test="${not empty game.actual_winner_id and game.actual_winner_id != 0}">
+                            <div class="scoreboard">
+                                <table>
+                                    <thead>
+                                    <tr>
+                                        <th>TEAM</th>
+                                        <th>1</th><th>2</th><th>3</th><th>4</th><th>5</th>
+                                        <th>6</th><th>7</th><th>8</th><th>9</th><th>10</th>
+                                        <th>11</th><th>12</th><th>R</th><th>H</th><th>E</th><th>B</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td class="team-name">${game.team1Name}</td>
+                                        <c:forEach var="score" items="${game.team1Scores}">
+                                            <td class="score-text">${score}</td>
+                                        </c:forEach>
+                                        <c:forEach var="total" items="${game.team1Total}">
+                                            <td class="score-total">${total}</td>
+                                        </c:forEach>
+                                    </tr>
+                                    <tr>
+                                        <td class="team-name">${game.team2Name}</td>
+                                        <c:forEach var="score" items="${game.team2Scores}">
+                                            <td class="score-text">${score}</td>
+                                        </c:forEach>
+                                        <c:forEach var="total" items="${game.team2Total}">
+                                            <td class="score-total">${total}</td>
+                                        </c:forEach>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <c:if test="${not empty game.predicted_team_id and game.predicted_team_id != 0}">
+                                <div class="prediction-info">
+                                    <span>내 예측: ${game.predicted_team_name}</span>
+                                    <c:choose>
+                                        <c:when test="${not empty game.actual_winner_id and game.actual_winner_id != 0}">
                                     <span>
                                         <c:choose>
                                             <c:when test="${game.predicted_team_id == game.actual_winner_id}">
@@ -102,33 +102,45 @@
                                             </c:otherwise>
                                         </c:choose>
                                     </span>
-                                </c:when>
-                                <c:otherwise>
-                                    <span>(경기 결과 대기중)</span>
-                                </c:otherwise>
-                            </c:choose>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <span>(경기 결과 대기중)</span>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </div>
+                            </c:if>
                         </div>
-                    </c:if>
-                </div>
-            </c:forEach>
-        </c:otherwise>
-    </c:choose>
+                    </c:forEach>
+                </c:otherwise>
+            </c:choose>
+        </div>
     </div>
-</div>
 </div>
 <script>
     let userPredictions = {};
+    const todayDate = getTodayDateStr();
+    const todayKorean = getTodayKoreanStr();
     $(document).ready(function() {
-        const todayDate = getTodayDateStr();
-        const todayKorean = getTodayKoreanStr();
         $('#currentDate').data('date', todayDate).text(todayKorean);
         changeDate(0);
     });
 
-    function selectPrediction(gameId, team, teamId,button) {
+    function selectPrediction(gameId, team, teamId, button, gameDate) {
         // 같은 게임의 다른 버튼들 선택 해제
         const gameContainer = button.closest('.game-container');
         const allButtons = gameContainer.querySelectorAll('.team-logo');
+
+        const today = new Date();
+        const todayString = today.getFullYear() + '-' +
+            String(today.getMonth() + 1).padStart(2, '0') + '-' +
+            String(today.getDate()).padStart(2, '0');
+
+        // 오늘보다 이전 날짜면 예측 불가
+        if (gameDate < todayString) {
+            alert('이미 종료된 경기는 예측할 수 없습니다.');
+            return false;
+        }
+
         allButtons.forEach(btn => btn.classList.remove('selected'));
 
         button.classList.add('selected');
